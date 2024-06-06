@@ -1,0 +1,56 @@
+user:
+ first_name
+ last_name
+ username
+ email
+ phone
+ b-date
+ city
+ address
+ sign_near_the_house
+
+
+category:
+ name
+ image
+
+product:
+ name
+ category --> FK
+ last price -->allow null - if there ,then put sale box in the product
+ current price
+ quantity --> if there many , then is stock - if few, then low in stock , if finish, then not in     stock
+ available sizes
+ available colors
+ descripthion
+ 
+
+  
+cart:
+ product -->FK
+ quantity 
+ items
+ shipping -->FK
+ 
+wishlist:
+ user-->FK
+ product-->FK 
+ 
+ reviews:
+  user-->FK
+  review
+  comment 
+  date-->auto  
+  
+  
+info about arkan:
+  name
+  phone_number
+  whatsapp
+  logo
+  location
+  email
+  shipping price
+  free_returns_duration
+  fast_delivery_price
+      
