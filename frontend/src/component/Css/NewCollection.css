@@ -1,0 +1,28 @@
+.image-hover-wrapper {
+    position: relative;
+    
+  }
+  
+  .image-hover-primary,
+  .image-hover-secondary {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .image-hover-secondary {
+    opacity: 0;
+  }
+  
+  .image-hover-wrapper:hover .image-hover-primary {
+    opacity: 0;
+  }
+  
+  .image-hover-wrapper:hover .image-hover-secondary {
+    opacity: 1;
+  }
+  
