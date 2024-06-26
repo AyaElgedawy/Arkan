@@ -1,62 +1,29 @@
 
 import { useEffect, useState } from 'react'
  import Pagination from '../../component/Pagination/Pagintaion' 
+import { getProductByCategoryId } from '../../Store/Actions/ProductAction';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 function Products(){
-    const [products, setProducts] = useState([]);
+  const { category_id } = useParams();
+    // const [products, setProducts] = useState([]);
   const [hoverIndex, setHoverIndex] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(3); // Set the number of hotels to display per page
+    const dispatch = useDispatch();
+    const products = useSelector((state) => state.combineProductByCategory.productByCategory);
 
   useEffect(() => {
     // Fetch best seller products data from an API or your own data source
-    fetchProducts();
-  }, []);
+    dispatch(getProductByCategoryId(category_id));
+  }, [category_id]);
 
-  const fetchProducts = () => {
-    // Implement your own logic to fetch best seller products
-    // For this example, we'll use a hardcoded array
-    const product = [
-      {
-        id: 1,
-        name: 'product 1',
-        image: './images/a3.jpg',
-        image2: 'https://demo1.leotheme.com/bos_soucer_demo/346-home_default/occaecat-cupi.jpg',
-      },
-      {
-        id: 2,
-        name: 'product 2',
-        image: './images/a.jpg',
-        image2: 'https://demo1.leotheme.com/bos_soucer_demo/346-home_default/occaecat-cupi.jpg',
-
-      },
-      {
-        id: 3,
-        name: 'product 3',
-        image: './images/a3.jpg',
-        image2: 'https://demo1.leotheme.com/bos_soucer_demo/346-home_default/occaecat-cupi.jpg',
-
-      },
-      {
-        id: 4,
-        name: 'product 4',
-        image: './images/a3.jpg',
-        image2: 'https://demo1.leotheme.com/bos_soucer_demo/346-home_default/occaecat-cupi.jpg',
-
-      },
-      {
-        id: 5,
-        name: 'product 5',
-        image: './images/a3.jpg',
-        image2: 'https://demo1.leotheme.com/bos_soucer_demo/346-home_default/occaecat-cupi.jpg',
-
-      },
-    ];
-    setProducts(product);
-  };
-  const indexOfLastHotel = currentPage * pageSize;
-  const indexOfFirstHotel = indexOfLastHotel - pageSize;
-  const currentHotels = products.slice(indexOfFirstHotel, indexOfLastHotel);
+  
+  
+  const indexOfLastProduct = currentPage * pageSize;
+  const indexOfFirstProduct = indexOfLastProduct - pageSize;
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
 
   // Function to handle page changes
   const onPageChange = (pageNumber) => {
@@ -405,8 +372,8 @@ Showing 1-9 of 9 item(s)
 
 <div className="product_list grid  plist-default ">
 <div className="row">
-{currentHotels &&
-                currentHotels.filter(post => {
+{currentProducts &&
+                currentProducts.filter(post => {
                     if (query === '') {
                         return post;
                     } else if (post.name.toLowerCase().includes(query.toLowerCase())) {
@@ -427,14 +394,14 @@ Showing 1-9 of 9 item(s)
 {hoverIndex === index ? (
                     <img
                       className="img-fluid"
-                      src={product.image2}
-                      data-full-size-image-url={product.image2}
+                      src={`http://127.0.0.1:8000/${product.image2}`}
+                      data-full-size-image-url={`http://127.0.0.1:8000/${product.image2}`}
                     />
                   ) : (
                     <img
                       className="img-fluid"
-                      src={product.image}
-                      data-full-size-image-url={product.image}
+                      src={`http://127.0.0.1:8000/${product.image1}`}
+                      data-full-size-image-url={`http://127.0.0.1:8000/${product.image1}`}
                     />
                   )}
 <span className="product-additional" data-idproduct="2"></span>
@@ -478,13 +445,13 @@ Showing 1-9 of 9 item(s)
 
 
 
-<h3 className="h3 product-title" itemprop="name"><a href="https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-7-eiusmod-tempor.html#/1-size-s/11-color-black">Eiusmod tempor</a></h3>
+<h3 className="h3 product-title" itemprop="name"><a href="https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-7-eiusmod-tempor.html#/1-size-s/11-color-black">{product.name}</a></h3>
 <div className="p-price">
 
 <div className="product-price-and-shipping ">
 <span className="sr-only">Price</span>
 <span className="price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-<span itemprop="priceCurrency" content="USD"></span><span itemprop="price" content="26.99">$26.99</span>
+<span itemprop="priceCurrency" content="USD"></span><span itemprop="price" content="26.99">{product.current_price}</span>
 </span>
 </div>
 
@@ -507,7 +474,7 @@ Showing 1-9 of 9 item(s)
 </form>
 </div>
 </div>
-<div className="product-description-short" itemprop="description">Nec consul possit delenit ei, illud forensibus vim ea, mei ubique sapientem et. Eos eu idque falli inimicus, ne odio dictas gloriatur sed, ea unum...</div>
+<div className="product-description-short" itemProp="description">{product.description}</div>
 </div>
 </div>
 </article>

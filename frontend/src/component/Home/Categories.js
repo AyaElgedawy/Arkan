@@ -160,7 +160,7 @@ function Categories(){
         <div className="left-block">
         <div className="block-carousel-image-container image">
         <div className="ap-more-info" data-id="4"></div>
-        <a title="MEN'S Suits" href="#">
+        <a title={cat.name} href={`/products/${cat.id}/`}>
         <img className="img-fluid" src={cat.image} />
         <div className="title">{cat.name}</div>
         <div className="descript">Shop All</div>
