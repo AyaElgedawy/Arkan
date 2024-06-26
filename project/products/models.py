@@ -11,7 +11,8 @@ class Product(models.Model):
     available_sizes = models.CharField(max_length=100, null=True)
     available_colors = models.CharField(max_length=100, null=True)
     description = models.TextField()
-
-class Image(models.Model):
-    product = models.ForeignKey(Product,on_delete=models.CASCADE,default=1,related_name='images')
-    image=models.ImageField()    
+    image1=models.ImageField(null=True,blank=True)   
+    image2=models.ImageField(null=True,blank=True)    
+    image3=models.ImageField(null=True,blank=True)    
+    image4=models.ImageField(null=True,blank=True)    
+    image5=models.ImageField(null=True,blank=True)    
