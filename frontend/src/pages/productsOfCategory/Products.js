@@ -4,20 +4,22 @@ import { useEffect, useState } from 'react'
 import { getProductByCategoryId } from '../../Store/Actions/ProductAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
+import { getCategory } from '../../Store/Actions/CategoryAction';
 function Products(){
   const { category_id } = useParams();
-    // const [products, setProducts] = useState([]);
   const [hoverIndex, setHoverIndex] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
     const [pageSize] = useState(3); // Set the number of hotels to display per page
     const dispatch = useDispatch();
     const products = useSelector((state) => state.combineProductByCategory.productByCategory);
-
-  useEffect(() => {
+    const categorys = useSelector((state) => state.combineCategory.category);
+    const currentCategory = categorys.find((category) => category.id == category_id); 
+     useEffect(() => {
     // Fetch best seller products data from an API or your own data source
     dispatch(getProductByCategoryId(category_id));
-  }, [category_id]);
+    dispatch(getCategory());
+  }, [category_id],dispatch);
 
   
   
@@ -74,7 +76,7 @@ function Products(){
 </li>
 <li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
 <a itemprop="item" href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics">
-<span itemprop="name">Basics</span>
+<span itemprop="name">{currentCategory.name}</span>
 </a>
 <meta itemprop="position" content="4"/>
 </li>
@@ -83,7 +85,7 @@ function Products(){
 <div className="row">
 <div id="left-column" className="sidebar col-xs-12 col-sm-12 col-md-4 col-lg-3">
 <div className="block-categories block block-highlighted hidden-sm-down">
-<h4 className="title_block"><a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics">Basics</a></h4>
+<h4 className="title_block"><a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics">{currentCategory.name}</a></h4>
 <div className="block_content">
 <ul className="category-top-menu">
 <li>
