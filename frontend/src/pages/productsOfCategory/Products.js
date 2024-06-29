@@ -5,6 +5,7 @@ import { getProductByCategoryId } from '../../Store/Actions/ProductAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { getCategory } from '../../Store/Actions/CategoryAction';
+import { getColor, getSize } from '../../Store/Actions/ProductVariantAcrion';
 function Products(){
   const { category_id } = useParams();
   const [hoverIndex, setHoverIndex] = useState(null);
@@ -14,78 +15,85 @@ function Products(){
     const dispatch = useDispatch();
     const products = useSelector((state) => state.combineProductByCategory.productByCategory);
     const categorys = useSelector((state) => state.combineCategory.category);
+    const colors = useSelector((state) => state.combineProductVariant.colors);
+    const sizes = useSelector((state) => state.combineProductVariant.sizes);
+    const [filters, setFilters] = useState({
+      size: [],
+      color: [],
+      price: [],
+    });
+  const [query, setQuery] = useState("")
+   
     const currentCategory = categorys.find((category) => category.id == category_id); 
      useEffect(() => {
     // Fetch best seller products data from an API or your own data source
     dispatch(getProductByCategoryId(category_id));
     dispatch(getCategory());
+    dispatch(getColor());
+    dispatch(getSize());
+    console.log(products);
   }, [category_id],dispatch);
 
-  
+  useEffect(()=>{
+    console.log(filters.price,"######");
+  },[filters])
   
   const indexOfLastProduct = currentPage * pageSize;
   const indexOfFirstProduct = indexOfLastProduct - pageSize;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const currentProducts = products.filter((product) => {
+    const matchesSize = filters.size.length === 0 || product.sizes.some(size => filters.size.includes(size));
+    const matchesColor = filters.color.length === 0 || product.colors.some(color => filters.color.includes(color));
+    const matchesPrice = filters.price.length === 0 || filters.price.some((priceRange) => {
+    const [min, max] = priceRange.split('-');
+      return product.current_price >= (min) && product.current_price <= (max);
+    })
+    return matchesSize && matchesColor && matchesPrice;
+  }).slice(indexOfFirstProduct, indexOfLastProduct);
 
   // Function to handle page changes
   const onPageChange = (pageNumber) => {
       setCurrentPage(pageNumber);
   };
-  const [query, setQuery] = useState("")
 
-  const responsive = {
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 4,
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 2,
-    },
-    mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1,
-    },
-  };
   
+  const handleFilterChange = (type, value) => {
+    setFilters((filters) => ({
+      ...filters,
+      [type]: filters[type].includes(value)
+        ? filters[type].filter((item) => item != value)
+        : [...filters[type], value],
+        
+    }));
+    console.log(value);
+  };
 
+  const handleClearFilters = () =>{
+    setFilters({
+      size: [],
+      color: [],
+      price: [],
+    });
+  }
+  const [upClass, setUpClass] = useState('hidden-sm-down');
+  const [downClass, setDownClass] = useState('');
 
+  const handleDownClick = () => {
+      setDownClass('hidden-sm-down');
+      upClass== 'hidden-sm-down' && setUpClass('')
+  };
+  const handleUpClick = () => {
+    setDownClass('');
+     setUpClass('hidden-sm-down')
+};
     return(
         <>
             <section id="wrapper">
 <div className="container">
-<nav data-depth="4" className="breadcrumb hidden-sm-down">
-<ol itemscope itemtype="http://schema.org/BreadcrumbList">
-<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-<a itemprop="item" href="https://demo1.leotheme.com/bos_soucer_demo/en/">
-<span itemprop="name">Home</span>
-</a>
-<meta itemprop="position" content="1"/>
-</li>
-<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-<a itemprop="item" href="https://demo1.leotheme.com/bos_soucer_demo/en/3-scelerisque-magna">
-<span itemprop="name">scelerisque magna</span>
-</a>
-<meta itemprop="position" content="2"/>
-</li>
-<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-<a itemprop="item" href="https://demo1.leotheme.com/bos_soucer_demo/en/4-posuere-diam">
-<span itemprop="name">posuere diam</span>
-</a>
-<meta itemprop="position" content="3"/>
-</li>
-<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-<a itemprop="item" href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics">
-<span itemprop="name">{currentCategory.name}</span>
-</a>
-<meta itemprop="position" content="4"/>
-</li>
-</ol>
-</nav>
+
 <div className="row">
 <div id="left-column" className="sidebar col-xs-12 col-sm-12 col-md-4 col-lg-3">
 <div className="block-categories block block-highlighted hidden-sm-down">
-<h4 className="title_block"><a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics">{currentCategory.name}</a></h4>
+<h4 className="title_block"><a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics">{currentCategory&& currentCategory.name}</a></h4>
 <div className="block_content">
 <ul className="category-top-menu">
 <li>
@@ -93,18 +101,18 @@ function Products(){
 </ul>
 </div>
 </div>
-<div id="search_filters_wrapper" className="hidden-sm-down">
+<div id="search_filters_wrapper" className={`${upClass}`}>
 <div id="search_filter_controls" className="hidden-md-up">
 <span id="_mobile_search_filters_clear_all"></span>
-<button className="btn btn-secondary ok">
+<button className="btn btn-secondary ok" onClick={handleUpClick}>
 <i className="material-icons rtl-no-flip">&#xE876;</i>
 OK
 </button>
 </div>
 <div id="search_filters" className="block">
 <p className="text-uppercase h6 hidden-sm-down title_block">Filter By</p>
-<div id="_desktop_search_filters_clear_all" className="hidden-sm-down clear-all-wrapper text-xs-center">
-<button data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics" className="btn btn-tertiary js-search-filters-clear-all">
+<div id="_desktop_search_filters_clear_all" className=" clear-all-wrapper text-xs-center">
+<button className="btn btn-tertiary js-search-filters-clear-all" onClick={handleClearFilters}>
 <i className="material-icons">&#xE14C;</i>
 Clear all
 </button>
@@ -112,112 +120,36 @@ Clear all
 <div className="block_content">
 <section className="facet clearfix  attr-color">
 <p className="h6 facet-title hidden-sm-down">Color</p>
-<div className="title hidden-md-up" data-target="#facet_22899" data-toggle="collapse">
+<div className={`title hidden-md-up  `} data-target="#facet_22899" data-toggle="collapse" 
+ >
 <p className="h6 facet-title">Color</p>
 <span className="float-xs-right">
 <span className="navbar-toggler collapse-icons">
-<i className="material-icons add">&#xE313;</i>
-<i className="material-icons remove">&#xE316;</i>
 </span>
 </span>
 </div>
-<ul id="facet_22899" className="collapse">
-<li>
+<ul id="facet_22899" className='' >
+{colors.map((color,index) => (
+<li key={index}>
 <label className="facet-label" for="facet_input_22899_0">
 <span className="custom-checkbox">
-<input id="facet_input_22899_0" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Beige" type="checkbox"/>
-<span className="color" style={{backgroundColor:"#f5f5dc"}}></span>
+<input id="facet_input_22899_0" 
+ type="checkbox"
+ checked={filters.color.includes(color.id)}
+ onChange={() => handleFilterChange('color', color.id)}
+
+ />
+<span className="color" 
+style={{backgroundColor:color.code,border: filters.color.includes(color.id) ? '2px solid #000' : 'none'}}></span>
 </span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Beige" className="_gray-darker search-link js-search-link" rel="nofollow">
-Beige
-<span className="magnitude">(1)</span>
+<a  className="_gray-darker search-link js-search-link" rel="nofollow">
+{color.name}
+<span className="magnitude"></span>
 </a>
 </label>
 </li>
-<li>
-<label className="facet-label" for="facet_input_22899_1">
-<span className="custom-checkbox">
-<input id="facet_input_22899_1" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-White" type="checkbox"/>
-<span className="color" style={{backgroundColor:"#ffffff"}}></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-White" className="_gray-darker search-link js-search-link" rel="nofollow">
-White
-<span className="magnitude">(3)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_22899_2">
-<span className="custom-checkbox">
-<input id="facet_input_22899_2" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Black" type="checkbox"/>
-<span className="color" style={{backgroundColor:"#434A54"}}></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Black" className="_gray-darker search-link js-search-link" rel="nofollow">
-Black
-<span className="magnitude">(2)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_22899_3">
-<span className="custom-checkbox">
-<input id="facet_input_22899_3" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Orange" type="checkbox"/>
-<span className="color" style={{backgroundColor:"#F39C11"}}></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Orange" className="_gray-darker search-link js-search-link" rel="nofollow">
-Orange
-<span className="magnitude">(4)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_22899_4">
-<span className="custom-checkbox">
-<input id="facet_input_22899_4" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Blue" type="checkbox"/>
-<span className="color" style={{backgroundColor:"#5D9CEC"}}></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Blue" className="_gray-darker search-link js-search-link" rel="nofollow">
-Blue
-<span className="magnitude">(2)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_22899_5">
-<span className="custom-checkbox">
-<input id="facet_input_22899_5" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Green" type="checkbox"/>
-<span className="color" style={{backgroundColor:"#A0D468"}}></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Green" className="_gray-darker search-link js-search-link" rel="nofollow">
-Green
-<span className="magnitude">(1)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_22899_6">
-<span className="custom-checkbox">
-<input id="facet_input_22899_6" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Yellow" type="checkbox"/>
-<span className="color" style={{backgroundColor:"#F1C40F"}}></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Yellow" className="_gray-darker search-link js-search-link" rel="nofollow">
-Yellow
-<span className="magnitude">(2)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_22899_7">
-<span className="custom-checkbox">
-<input id="facet_input_22899_7" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Pink" type="checkbox"/>
-<span className="color" style={{backgroundColor:"#FCCACD"}}></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Color-Pink" className="_gray-darker search-link js-search-link" rel="nofollow">
-Pink
-<span className="magnitude">(1)</span>
-</a>
-</label>
-</li>
+ ))}
+
 </ul>
 </section>
 <section className="facet clearfix ">
@@ -226,90 +158,79 @@ Pink
 <p className="h6 facet-title">Price</p>
 <span className="float-xs-right">
 <span className="navbar-toggler collapse-icons">
-<i className="material-icons add">&#xE313;</i>
-<i className="material-icons remove">&#xE316;</i>
+
 </span>
 </span>
 </div>
+
 <ul id="facet_31141" className="collapse">
-<li>
-<label className="facet-label" for="facet_input_31141_0">
-<span className="custom-radio">
-<input id="facet_input_31141_0" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-16-17" type="radio" name="filter Price"/>
-<span className="ps-shown-by-js"></span>
+          {[
+            { min: 16, max: 17 },
+            { min: 21, max: 22 },
+            { min: 23, max: 29 },
+            { min: 30, max: 32 },
+            { min: 50, max: 53 },
+          ].map((priceRange, index) => (
+            <li key={index}>
+              <label className="facet-label" htmlFor={`facet_input_31141_${index}`}>
+                <span className="custom-checkbo">
+                  <input
+                    id={`facet_input_31141_${index}`}
+                    type="checkbox"
+                    name="filter Price"
+                    checked={filters.price.includes(`${priceRange.min}-${priceRange.max}`)}
+                    onChange={() => handleFilterChange('price', `${priceRange.min}-${priceRange.max}`)}
+                  />
+                  <span className="ps-shown-by-js"></span>
+                </span>
+                <a
+                 
+                  className="_gray-darker search-link js-search-link"
+                  rel="nofollow"
+                >
+                  ${priceRange.min}.00 - ${priceRange.max}.00 <span className="magnitude"></span>
+                </a>
+              </label>
+            </li>
+          ))}
+        </ul>
+</section>
+<section className="facet clearfix  attr-color">
+<p className="h6 facet-title hidden-sm-down">Size</p>
+<div className="title hidden-md-up" data-target="#facet_22899" data-toggle="collapse">
+<p className="h6 facet-title">Size</p>
+<span className="float-xs-right">
+<span className="navbar-toggler collapse-icons">
+
 </span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-16-17" className="_gray-darker search-link js-search-link" rel="nofollow">
-$16.00 - $17.00
-<span className="magnitude">(1)</span>
-</a>
+</span>
+</div>
+<ul id="facet_22899" className="collapse">
+{sizes.map((size,index) => (
+<li key={index}>
+<label className="facet-label" for="facet_input_22899_0"
+onClick={() => handleFilterChange('size', size.id)}>
+<span className="custom-checkbo">
+<input id="facet_input_22899_0" 
+ type="checkbox"
+ checked={filters.size.includes(size.id)}
+ onChange={() => handleFilterChange('size', size.id)}/>
+</span>
+{size.name}
+<span className="magnitude"></span>
 </label>
 </li>
-<li>
-<label className="facet-label" for="facet_input_31141_1">
-<span className="custom-radio">
-<input id="facet_input_31141_1" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-21-22" type="radio" name="filter Price"/>
-<span className="ps-shown-by-js"></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-21-22" className="_gray-darker search-link js-search-link" rel="nofollow">
-$21.00 - $22.00
-<span className="magnitude">(1)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_31141_2">
-<span className="custom-radio">
-<input id="facet_input_31141_2" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-25-29" type="radio" name="filter Price"/>
-<span className="ps-shown-by-js"></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-25-29" className="_gray-darker search-link js-search-link" rel="nofollow">
-$25.00 - $29.00
-<span className="magnitude">(5)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_31141_3">
-<span className="custom-radio">
-<input id="facet_input_31141_3" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-30-32" type="radio" name="filter Price"/>
-<span className="ps-shown-by-js"></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-30-32" className="_gray-darker search-link js-search-link" rel="nofollow">
-$30.00 - $32.00
-<span className="magnitude">(1)</span>
-</a>
-</label>
-</li>
-<li>
-<label className="facet-label" for="facet_input_31141_4">
-<span className="custom-radio">
-<input id="facet_input_31141_4" data-search-url="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-50-53" type="radio" name="filter Price"/>
-<span className="ps-shown-by-js"></span>
-</span>
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/7-basics?q=Price-%24-50-53" className="_gray-darker search-link js-search-link" rel="nofollow">
-$50.00 - $53.00
-<span className="magnitude">(1)</span>
-</a>
-</label>
-</li>
+ ))}
+
 </ul>
 </section>
 </div>
 </div>
 </div>
 
-<div className="row ApRow  " >
 
-<div className="col-sm-12 col-xs-12 col-sp-12 col-md-12 col-lg-12 col-xl-12  ApColumn ">
-
-<div id="image-form_4405794973323754" className="block effect ApImage">
-<a href="#">
-<img src="/bos_soucer_demo/themes/bos_soucer/assets/img/modules/appagebuilder/images/bn-left.jpg" className title alt style={{ width:"100%",height:"auto"}} />
-</a>
 </div>
-</div> </div>
-</div>
-<div id="content-wrapper" className="left-column col-xs-12 col-sm-12 col-md-8 col-lg-9">
+<div id="content-wrapper" className={`left-column col-xs-12 col-sm-12 col-md-8 col-lg-9 ${downClass}`}>
 <section id="main">
 <div id="js-product-list-header">
 
@@ -351,19 +272,19 @@ Price, high to low
 </div>
 </div>
 <div className="col-sm-4 col-xs-4 col-sp-12 hidden-md-up filter-button">
-<button id="search_filter_toggler" className="btn btn-outline">
+<button id="search_filter_toggler"
+ className="btn btn-outline"
+ onClick={handleDownClick}>
 Filter
 </button>
 </div>
 </div>
 </div>
-<div className="col-sm-12 hidden-md-up text-sm-center showing">
-Showing 1-9 of 9 item(s)
+
 </div>
 </div>
 </div>
-</div>
-<div className="hidden-sm-down">
+<div className="hidden-sm-up">
 <section id="js-active-search-filters" className="hide">
 <h1 className="h6 hidden-xs-up">Active filters</h1>
 </section>
@@ -391,7 +312,7 @@ Showing 1-9 of 9 item(s)
 <article className="product-miniature js-product-miniature" data-id-product="2" data-id-product-attribute="7" itemscope itemtype="http://schema.org/Product">
 <div className="thumbnail-container">
 <div className="product-image">
-<a href="https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-7-eiusmod-tempor.html#/1-size-s/11-color-black" className="thumbnail product-thumbnail">
+<a href="" className="thumbnail product-thumbnail">
 {/* <img className="img-fluid" src="https://demo1.leotheme.com/bos_soucer_demo/304-home_default/eiusmod-tempor.jpg" alt data-full-size-image-url="https://demo1.leotheme.com/bos_soucer_demo/304-large_default/eiusmod-tempor.jpg"/> */}
 {hoverIndex === index ? (
                     <img
