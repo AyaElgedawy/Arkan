@@ -28,3 +28,10 @@ class ColorsList(generics.ListAPIView):
 class SizesList(generics.ListAPIView):
     queryset=Size.objects.all()
     serializer_class=SizeSerializer
+
+@api_view(['Get'])
+def sizesProduct(request,product_id):
+    product = Product.objects.get(id = product_id)
+    size = product.sizes.all()
+    size_ser = SizeSerializer(size,many=True)
+    return Response(size_ser.data)
