@@ -35,3 +35,10 @@ def sizesProduct(request,product_id):
     size = product.sizes.all()
     size_ser = SizeSerializer(size,many=True)
     return Response(size_ser.data)
+
+@api_view(['Get'])
+def colorsProduct(request,product_id):
+    product = Product.objects.get(id = product_id)
+    color = product.colors.all()
+    color_ser = ColorSerializer(color,many=True)
+    return Response(color_ser.data)
