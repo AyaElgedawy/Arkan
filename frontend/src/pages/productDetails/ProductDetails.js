@@ -2,18 +2,21 @@ import { getProductDetails } from "../../Store/Actions/ProductAction";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
-import { getSizesProduct } from "../../Store/Actions/ProductVariantAcrion";
+import { getColorsProduct, getSizesProduct } from "../../Store/Actions/ProductVariantAcrion";
 
 function ProductDetails(){
     const { product_id } = useParams();
     const product = useSelector((state) => state.combineProductDetails.product);
     const sizesProduct = useSelector((state) => state.combineProductVariant.sizesProduct);
+    const colorsProduct = useSelector((state) => state.combineProductVariant.colorsProduct);
 
     const dispatch = useDispatch()
     useEffect(() => {
         // Fetch best seller products data from an API or your own data source
         dispatch(getProductDetails(product_id));
-        dispatch(getSizesProduct(product_id))
+        dispatch(getSizesProduct(product_id));
+        dispatch(getColorsProduct(product_id));
+
         console.log('product',product);
       }, []);
     return(
@@ -174,18 +177,20 @@ Tax excluded
 <div className="clearfix product-variants-item">
 <span className="control-label">Color</span>
 <ul id="group_3">
+{colorsProduct.map((color,index) => (
 <li className="float-xs-left input-container">
 <label>
 <input className="input-color" type="radio" data-product-attribute="3" name="group[3]" value="8"/>
-<span className="color" style={{backgroundColor: "#ffffff"}}><span className="sr-only">White</span></span>
+<span className="color" style={{backgroundColor: color.code}}><span className="sr-only">{color.name}</span></span>
 </label>
 </li>
-<li className="float-xs-left input-container">
+))}
+{/* <li className="float-xs-left input-container">
 <label>
 <input className="input-color" type="radio" data-product-attribute="3" name="group[3]" value="11" checked="checked"/>
 <span className="color" style={{backgroundColor: "#434A54"}}><span className="sr-only">Black</span></span>
 </label>
-</li>
+</li> */}
 </ul>
 </div>
 </div>
@@ -197,9 +202,9 @@ Tax excluded
 <div className="qty clearfix">
 <input type="text" name="qty" id="quantity_wanted" value="1" className="input-group" min="1" aria-label="Quantity"/>
 </div>
-<span id="product-availability">
-<i className="material-icons rtl-no-flip product-available">&#xE5CA;</i>
-In stock
+<span id="product-availability" style={{color: `${product.quantity> 0 ? "green" : "red"}`}}>
+{/* <i className="material-icons rtl-no-flip product-available">&#xE5CA;</i> */}
+{product.quantity > 0 ? "In stock" : "Not available" }
 </span>
 <p className="product-minimal-quantity">
 </p>

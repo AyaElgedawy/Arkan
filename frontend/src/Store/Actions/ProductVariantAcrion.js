@@ -32,3 +32,14 @@ export const getSizesProduct = (product_id) => (dispatch) => {
     .catch((err) => console.log(err))
     
 }
+
+export const getColorsProduct = (product_id) => (dispatch) => {
+    return axios.get(`http://127.0.0.1:8000/product/colorsProduct/${product_id}`)
+    .then ((res) =>
+        dispatch({
+        type: "GET_COLORS_PRODUCT",
+        payload: res.data
+    }))
+    .catch((err) => console.log(err))
+    
+}

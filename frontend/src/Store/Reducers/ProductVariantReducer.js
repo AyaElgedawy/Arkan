@@ -2,6 +2,7 @@ const INITIAL_VALUES = {
     colors: [],
     sizes:[],
     sizesProduct:[],
+    colorsProduct:[],
 };
 
 const ProductVariantReducer = (state = INITIAL_VALUES, action) => {
@@ -20,6 +21,11 @@ const ProductVariantReducer = (state = INITIAL_VALUES, action) => {
                 return{
                     ...state,
                     sizesProduct: action.payload
+                }  
+            case 'GET_COLORS_PRODUCT':
+                return{
+                    ...state,
+                    colorsProduct: action.payload
                 }    
         default:
             return state;
