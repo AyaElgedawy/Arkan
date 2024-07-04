@@ -8,6 +8,7 @@ import Footer from './component/Home/Footer';
 import myCart from './pages/cart/MyCart';
 import { Provider } from 'react-redux';
 import myStore from './Store/Store';
+import ProductDetails from './pages/productDetails/ProductDetails';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route exact path={"/"} component={Home} />
       <Route exact path={"/products/:category_id"} component={Products} />
       <Route exact path={"/mycart"} component={myCart} />
+      <Route exact path={"/product_details/:product_id"} component={ProductDetails} />
 
       </Switch>
       <Footer />

@@ -312,7 +312,7 @@ Filter
 <article className="product-miniature js-product-miniature" data-id-product="2" data-id-product-attribute="7" itemscope itemtype="http://schema.org/Product">
 <div className="thumbnail-container">
 <div className="product-image">
-<a href="" className="thumbnail product-thumbnail">
+<a href={`/product_details/${product.id}`} className="thumbnail product-thumbnail">
 {/* <img className="img-fluid" src="https://demo1.leotheme.com/bos_soucer_demo/304-home_default/eiusmod-tempor.jpg" alt data-full-size-image-url="https://demo1.leotheme.com/bos_soucer_demo/304-large_default/eiusmod-tempor.jpg"/> */}
 {hoverIndex === index ? (
                     <img
