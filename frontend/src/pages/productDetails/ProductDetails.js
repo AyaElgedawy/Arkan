@@ -1,8 +1,10 @@
 import { getProductDetails } from "../../Store/Actions/ProductAction";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 import { getColorsProduct, getSizesProduct } from "../../Store/Actions/ProductVariantAcrion";
+import { Magnifier, GlassMagnifier, SideBySideMagnifier, PictureInPictureMagnifier } from 'react-image-magnifiers';
+import Slider from 'react-slick';
 
 function ProductDetails(){
     const { product_id } = useParams();
@@ -19,6 +21,23 @@ function ProductDetails(){
 
         console.log('product',product);
       }, []);
+
+      const [selectedImage, setSelectedImage] = useState(0);
+
+  const handleImageChange = (index) => {
+    setSelectedImage(index);
+  };
+
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    arrows: true,
+    nextArrow: <button className="slick-next slick-arrow" aria-label="Next" type="button">Next</button>,
+    prevArrow: <button className="slick-prev slick-arrow" aria-label="Previous" type="button">Previous</button>
+  };
     return(
         <>
 <section id="wrapper">
@@ -32,51 +51,43 @@ function ProductDetails(){
     <div className="col-md-6 col-lg-6 col-xl-6">
 <section className="page-content" id="content" data-templateview="left" data-numberimage="4" data-numberimage1200="3" data-numberimage992="3" data-numberimage768="3" data-numberimage576="3" data-numberimage480="2" data-numberimage360="2" data-templatemodal="0" data-templatezoomtype="in" data-zoomposition="right" data-zoomwindowwidth="500" data-zoomwindowheight="500">
 <div className="images-container">
-<div className="product-cover">
-<ul className="product-flags">
-</ul>
-<img id="zoom_product" data-type-zoom className="js-qv-product-cover img-fluid" src="https://demo1.leotheme.com/bos_soucer_demo/304-large_default/eiusmod-tempor.jpg" alt title itemProp="image"/>
-<div className="layer hidden-sm-down" data-toggle="modal" data-target="#product-modal">
-<i className="material-icons zoom-in">&#xE8FF;</i>
-</div>
-</div>
-<div id="thumb-gallery" className="product-thumb-images">
-<div className="thumb-container  active ">
-<a href="javascript:void(0)" data-image="https://demo1.leotheme.com/bos_soucer_demo/304-large_default/eiusmod-tempor.jpg" data-zoom-image="https://demo1.leotheme.com/bos_soucer_demo/304-large_default/eiusmod-tempor.jpg">
-<img className="thumb js-thumb  selected " data-image-medium-src="https://demo1.leotheme.com/bos_soucer_demo/304-medium_default/eiusmod-tempor.jpg" data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/304-large_default/eiusmod-tempor.jpg" src="https://demo1.leotheme.com/bos_soucer_demo/304-home_default/eiusmod-tempor.jpg" alt title itemProp="image"/>
-</a>
-</div>
-<div className="thumb-container ">
-<a href="javascript:void(0)" data-image="https://demo1.leotheme.com/bos_soucer_demo/305-large_default/eiusmod-tempor.jpg" data-zoom-image="https://demo1.leotheme.com/bos_soucer_demo/305-large_default/eiusmod-tempor.jpg">
-<img className="thumb js-thumb " data-image-medium-src="https://demo1.leotheme.com/bos_soucer_demo/305-medium_default/eiusmod-tempor.jpg" data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/305-large_default/eiusmod-tempor.jpg" src="https://demo1.leotheme.com/bos_soucer_demo/305-home_default/eiusmod-tempor.jpg" alt title itemProp="image"/>
-</a>
-</div>
-<div className="thumb-container ">
-<a href="javascript:void(0)" data-image="https://demo1.leotheme.com/bos_soucer_demo/306-large_default/eiusmod-tempor.jpg" data-zoom-image="https://demo1.leotheme.com/bos_soucer_demo/306-large_default/eiusmod-tempor.jpg">
-<img className="thumb js-thumb " data-image-medium-src="https://demo1.leotheme.com/bos_soucer_demo/306-medium_default/eiusmod-tempor.jpg" data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/306-large_default/eiusmod-tempor.jpg" src="https://demo1.leotheme.com/bos_soucer_demo/306-home_default/eiusmod-tempor.jpg" alt title itemProp="image"/>
-</a>
-</div>
-<div className="thumb-container ">
-<a href="javascript:void(0)" data-image="https://demo1.leotheme.com/bos_soucer_demo/307-large_default/eiusmod-tempor.jpg" data-zoom-image="https://demo1.leotheme.com/bos_soucer_demo/307-large_default/eiusmod-tempor.jpg">
-<img className="thumb js-thumb " data-image-medium-src="https://demo1.leotheme.com/bos_soucer_demo/307-medium_default/eiusmod-tempor.jpg" data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/307-large_default/eiusmod-tempor.jpg" src="https://demo1.leotheme.com/bos_soucer_demo/307-home_default/eiusmod-tempor.jpg" alt title itemProp="image"/>
-</a>
-</div>
-<div className="thumb-container ">
-<a href="javascript:void(0)" data-image="https://demo1.leotheme.com/bos_soucer_demo/308-large_default/eiusmod-tempor.jpg" data-zoom-image="https://demo1.leotheme.com/bos_soucer_demo/308-large_default/eiusmod-tempor.jpg">
-<img className="thumb js-thumb " data-image-medium-src="https://demo1.leotheme.com/bos_soucer_demo/308-medium_default/eiusmod-tempor.jpg" data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/308-large_default/eiusmod-tempor.jpg" src="https://demo1.leotheme.com/bos_soucer_demo/308-home_default/eiusmod-tempor.jpg" alt title itemProp="image"/>
-</a>
-</div>
-<div className="thumb-container ">
-<a href="javascript:void(0)" data-image="https://demo1.leotheme.com/bos_soucer_demo/309-large_default/eiusmod-tempor.jpg" data-zoom-image="https://demo1.leotheme.com/bos_soucer_demo/309-large_default/eiusmod-tempor.jpg">
-<img className="thumb js-thumb " data-image-medium-src="https://demo1.leotheme.com/bos_soucer_demo/309-medium_default/eiusmod-tempor.jpg" data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/309-large_default/eiusmod-tempor.jpg" src="https://demo1.leotheme.com/bos_soucer_demo/309-home_default/eiusmod-tempor.jpg" alt title itemProp="image"/>
-</a>
-</div>
-</div>
-<div className="arrows-product-fake slick-arrows">
-<button className="slick-prev slick-arrow" aria-label="Previous" type="button">Previous</button>
-<button className="slick-next slick-arrow" aria-label="Next" type="button">Next</button>
-</div>
-</div>
+      <div className="product-cover">
+        <ul className="product-flags">
+          {/* Add any product flags here */}
+        </ul>
+        <GlassMagnifier
+          imageSrc={product.image1}
+          imageAlt="Product Image"
+          largeImageSrc={product.image1}
+          square
+          magnifierSize="50%"
+          magnifierBorderSize={1}
+          magnifierBorderColor="#000"
+        />
+        <div className="layer hidden-sm-down" data-toggle="modal" data-target="#product-modal">
+          <i className="material-icons zoom-in">&#xE8FF;</i>
+        </div>
+      </div>
+      <div id="thumb-gallery" className="product-thumb-images">
+        <Slider {...settings}>
+          <div className={`thumb-container ${selectedImage === 0 ? 'active' : ''}`}>
+            <a href="javascript:void(0)" onClick={() => handleImageChange(0)}>
+              <img
+                className="thumb js-thumb"
+                data-image-medium-src={product.image1}
+                data-image-large-src={product.image2}
+                src={product.image1}
+                alt=""
+                title=""
+                itemProp="image"
+              />
+            </a>
+          </div>
+          {/* Add more thumbnail images here */}
+         
+        </Slider>
+      </div>
+    </div>
 </section>
 <div className="modal fade js-product-images-modal leo-product-modal" id="product-modal" data-thumbnails=".product-images-2">
 <div className="modal-dialog" role="document">

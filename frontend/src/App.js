@@ -9,6 +9,8 @@ import myCart from './pages/cart/MyCart';
 import { Provider } from 'react-redux';
 import myStore from './Store/Store';
 import ProductDetails from './pages/productDetails/ProductDetails';
+import Product from './pages/productDetails/Product';
+import SignalR from './component/SignalR/SignalR';
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
       <Route exact path={"/products/:category_id"} component={Products} />
       <Route exact path={"/mycart"} component={myCart} />
       <Route exact path={"/product_details/:product_id"} component={ProductDetails} />
+      <Route exact path={"/product"} component={Product} />
+      <Route exact path={"/signalr"} component={SignalR} />
 
       </Switch>
       <Footer />
