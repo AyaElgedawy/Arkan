@@ -1,0 +1,21 @@
+/* src/ProductDetail.css */
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+.thumbnail:hover {
+  border: 1px solid #000;
+}
+
+.selected-thumbnail {
+  border: 2px solid #000;
+}
+
+.main-image-container {
+  width: 500px;
+  height: 500px;
+}

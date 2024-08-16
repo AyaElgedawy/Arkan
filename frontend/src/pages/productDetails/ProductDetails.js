@@ -5,39 +5,46 @@ import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 import { getColorsProduct, getSizesProduct } from "../../Store/Actions/ProductVariantAcrion";
 import { Magnifier, GlassMagnifier, SideBySideMagnifier, PictureInPictureMagnifier } from 'react-image-magnifiers';
 import Slider from 'react-slick';
-
+import "./ProductDetails.css"
+import ReactImageMagnify from 'react-image-magnify';
 function ProductDetails(){
     const { product_id } = useParams();
     const product = useSelector((state) => state.combineProductDetails.product);
     const sizesProduct = useSelector((state) => state.combineProductVariant.sizesProduct);
     const colorsProduct = useSelector((state) => state.combineProductVariant.colorsProduct);
+    const images = [product.image1,product.image2,product.image3,product.image4,product.image5]
 
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [backgroundPosition, setBackgroundPosition] = useState('center');
     const dispatch = useDispatch()
     useEffect(() => {
         // Fetch best seller products data from an API or your own data source
         dispatch(getProductDetails(product_id));
         dispatch(getSizesProduct(product_id));
         dispatch(getColorsProduct(product_id));
-
+        setSelectedImage(images[0]);
         console.log('product',product);
-      }, []);
+      }, [product_id]);
+     
+      const [zoomStyle, setZoomStyle] = useState({});
 
-      const [selectedImage, setSelectedImage] = useState(0);
+      const handleMouseMove = (event) => {
+        const { left, top, width, height } = event.currentTarget.getBoundingClientRect();
+        const x = event.clientX - left;
+        const y = event.clientY - top;
+        const xPercent = (x / width) * 100;
+        const yPercent = (y / height) * 100;
+    
+        setZoomStyle({
+          backgroundImage: `url(${selectedImage})`,
+          backgroundSize: '200% 200%',
+          backgroundPosition: `${xPercent}% ${yPercent}%`,
+          backgroundRepeat: 'no-repeat',
+        });
+      };
 
-  const handleImageChange = (index) => {
-    setSelectedImage(index);
-  };
 
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    arrows: true,
-    nextArrow: <button className="slick-next slick-arrow" aria-label="Next" type="button">Next</button>,
-    prevArrow: <button className="slick-prev slick-arrow" aria-label="Previous" type="button">Previous</button>
-  };
+ 
     return(
         <>
 <section id="wrapper">
@@ -51,41 +58,47 @@ function ProductDetails(){
     <div className="col-md-6 col-lg-6 col-xl-6">
 <section className="page-content" id="content" data-templateview="left" data-numberimage="4" data-numberimage1200="3" data-numberimage992="3" data-numberimage768="3" data-numberimage576="3" data-numberimage480="2" data-numberimage360="2" data-templatemodal="0" data-templatezoomtype="in" data-zoomposition="right" data-zoomwindowwidth="500" data-zoomwindowheight="500">
 <div className="images-container">
-      <div className="product-cover">
-        <ul className="product-flags">
-          {/* Add any product flags here */}
-        </ul>
-        <GlassMagnifier
-          imageSrc={product.image1}
-          imageAlt="Product Image"
-          largeImageSrc={product.image1}
-          square
-          magnifierSize="50%"
-          magnifierBorderSize={1}
-          magnifierBorderColor="#000"
-        />
-        <div className="layer hidden-sm-down" data-toggle="modal" data-target="#product-modal">
-          <i className="material-icons zoom-in">&#xE8FF;</i>
-        </div>
-      </div>
-      <div id="thumb-gallery" className="product-thumb-images">
-        <Slider {...settings}>
-          <div className={`thumb-container ${selectedImage === 0 ? 'active' : ''}`}>
-            <a href="javascript:void(0)" onClick={() => handleImageChange(0)}>
-              <img
-                className="thumb js-thumb"
-                data-image-medium-src={product.image1}
-                data-image-large-src={product.image2}
-                src={product.image1}
-                alt=""
-                title=""
-                itemProp="image"
-              />
-            </a>
+
+ 
+     
+      <div>
+            <ReactImageMagnify
+              {...{
+                smallImage: {
+                  alt: 'Main Product Image',
+                  isFluidWidth: true,
+                  src: selectedImage,
+                },
+                largeImage: {
+                  src: selectedImage,
+                  width: 1200,
+                  height: 1800,
+                },
+                enlargedImageContainerStyle: { zIndex: 9 },
+                enlargedImageContainerDimensions: {
+                  width: '200%',
+                  height: '200%',
+                },
+              }}
+            />
           </div>
-          {/* Add more thumbnail images here */}
-         
-        </Slider>
+          <div style={{ marginTop: '20px' }}>
+        {images.map((image, index) => (
+          <img
+          key={index}
+          src={image}
+          alt={`Product Image ${index + 1}`}
+          style={{
+            
+            height: '150px',
+            cursor: 'pointer',
+            border: image === selectedImage ? '2px solid #000' : 'none',
+            margin:' 20px'
+          }}
+          className={`thumbnail ${image === selectedImage ? 'selected-thumbnail' : ''}`}
+          onClick={() => setSelectedImage(image)}
+        />
+        ))}
       </div>
     </div>
 </section>
