@@ -1,3 +1,5 @@
+import { faAnglesRight } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 function Footer(){
 
@@ -29,8 +31,8 @@ function Footer(){
                 <input name="email" type="text" value placeholder="Your email..."/>
                 <button className="btn btn-outline" name="submitNewsletter" type="submit" value="Subscribe">
                 <span className="text">JOIN</span>
-                <i className="fa fa-angle-double-right"></i>
-                </button>
+                <FontAwesomeIcon icon={faAnglesRight} />
+                                </button>
                 </div>
                 <input type="hidden" name="action" value="0"/>
                 <div className="clearfix"></div>

@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import Carousel from 'react-multi-carousel';
 import Image from 'react-image'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartShopping, faEye, faHeart } from '@fortawesome/free-solid-svg-icons';
 function NewCollection (){
    
 
@@ -130,15 +132,15 @@ function NewCollection (){
                 </div>
                 <div id="carousel-3431766885" className="owl-carousel owl-theme owl-loading plist-default">
                 <Carousel
-        responsive={responsive}
-        autoPlay={true}
-        swipeable={true}
-        draggable={true}
-        showDots={true}
-        infinite={true}
-        partialVisible={false}
-        dotListClass="custom-dot-list-style"
-      >
+                    responsive={responsive}
+                    autoPlay={true}
+                    swipeable={true}
+                    draggable={true}
+                    showDots={true}
+                    infinite={true}
+                    partialVisible={false}
+                    dotListClass="custom-dot-list-style"
+                  >
       {products.map((product,index) => (
                 <div key={product.id} className="ite " style={{padding:"10px"}}
                  onMouseEnter={() => setHoverIndex(index)}
@@ -147,35 +149,18 @@ function NewCollection (){
                 <div className="thumbnail-container">
                 <div className="product-image">
                 <a href="https://demo1.leotheme.com/bos_soucer_demo/en/basics/9-52-fugiat-nulla.html#/1-size-s/11-color-black" className="image-hover-wrapper thumbnail product-thumbnail " >
-                {/* <img className="image-hover-primary" src="https://demo1.leotheme.com/bos_soucer_demo/341-home_default/fugiat-nulla.jpg"  data-full-size-image-url="https://demo1.leotheme.com/bos_soucer_demo/346-home_default/occaecat-cupi.jpg"/> */}
-                {/* <Image className="social-icon" src = "https://demo1.leotheme.com/bos_soucer_demo/341-home_default/fugiat-nulla.jpg"
-              onMouseOver={e => (e.currentTarget.src ="https://demo1.leotheme.com/bos_soucer_demo/346-home_default/occaecat-cupi.jpg")}
-              onMouseOut={e => (e.currentTarget.src = "https://demo1.leotheme.com/bos_soucer_demo/341-home_default/fugiat-nulla.jpg")} 
-            /> */}
-{/* {isHovered &&<img
-        src={product.image}
-        alt="Primary Image"
-      onMouseLeave={handleMouseLeave}
-      />}
-     {!isHovered && <img
-        src={product.image2}
-        alt="Secondary Image"
-      onMouseEnter={handleMouseEnter}
-
-      />   }          */}
+                
             {hoverIndex === index ? (
                     <img
                       className="image-hover-primary "
-                      style={{height:"50%"}}
                       src={product.image2}
-                      data-full-size-image-url={product.image2}
+                      
                     />
                   ) : (
                     <img
                       className="image-hover-primary"
-                      style={{height:"50%"}}
                       src={product.image}
-                      data-full-size-image-url={product.image}
+                      
                     />
                   )}
                 <span className="product-additional" data-idproduct="9"></span>
@@ -189,7 +174,7 @@ function NewCollection (){
                 <a className="leo-wishlist-button btn-product btn-primary btn" href="javascript:void(0)" data-id-wishlist data-id-product="9" data-id-product-attribute="52" title="Add to Wishlist">
                 <span className="leo-wishlist-bt-loading cssload-speeding-wheel"></span>
                 <span className="leo-wishlist-bt-content">
-                <i className="icon-btn-product icon-wishlist material-icons">favorite_border</i>
+                <FontAwesomeIcon icon={faHeart} size="xl" />
                 <span className="name-btn-product">Add to Wishlist</span>
                 </span>
                 </a>
@@ -199,12 +184,12 @@ function NewCollection (){
                 <a href="#" className="quick-view" data-link-action="quickview">
                 <span className="leo-quickview-bt-loading cssload-speeding-wheel"></span>
                 <span className="leo-quickview-bt-content">
-                <i className="material-icons search">remove_red_eye</i>
+                <FontAwesomeIcon icon={faEye} size="lg" />
                 <span>Quick view</span>
                 </span>
                 </a>
                 </div>
-                <div className="compare">
+                {/* <div className="compare">
                 <a className="leo-compare-button btn-primary btn-product btn" href="javascript:void(0)" data-id-product="9" title="Add to Compare">
                 <span className="leo-compare-bt-loading cssload-speeding-wheel"></span>
                 <span className="leo-compare-bt-content">
@@ -212,8 +197,9 @@ function NewCollection (){
                 <span className="name-btn-product">Add to Compare</span>
                 </span>
                 </a>
+                </div> */}
                 </div>
-                </div></div>
+                </div>
                 <div className="product-meta">
                 <h3 className="h3 product-title" itemProp="name"><a href="https://demo1.leotheme.com/bos_soucer_demo/en/basics/9-52-fugiat-nulla.html#/1-size-s/11-color-black">Fugiat nulla</a></h3>
                 <div className="p-price">
@@ -236,7 +222,7 @@ function NewCollection (){
                 <button className="btn btn-primary btn-product add-to-cart leo-bt-cart leo-bt-cart_9" data-button-action="add-to-cart" type="submit">
                 <span className="leo-loading cssload-speeding-wheel"></span>
                 <span className="leo-bt-cart-content">
-                <i className="icon-btn-product icon-cart material-icons shopping-cart">card_travel</i>
+                <FontAwesomeIcon icon={faCartShopping} size="xl" />
                 <span className="name-btn-product">Add to cart</span>
                 </span>
                 </button>

@@ -7,6 +7,7 @@ import { Magnifier, GlassMagnifier, SideBySideMagnifier, PictureInPictureMagnifi
 import Slider from 'react-slick';
 import "./ProductDetails.css"
 import ReactImageMagnify from 'react-image-magnify';
+import { addToCart } from "../../Store/Actions/CartAction";
 function ProductDetails(){
     const { product_id } = useParams();
     const product = useSelector((state) => state.combineProductDetails.product);
@@ -177,7 +178,7 @@ Tax excluded
 </div>
 <div id="product-description-short-2" className="description-short" itemProp="description"><p>Nec consul possit delenit ei, illud forensibus vim ea, mei ubique sapientem et. Eos eu idque falli inimicus, ne odio dictas gloriatur sed, ea unum urbanitas dissentiet vel. Laoreet mandamus sed id. Efficiendi comprehensam cum in, iisque eleifend neglegentur quo te. Est choro quodsi inciderint no.</p></div>
 <div className="product-actions">
-<form action="https://demo1.leotheme.com/bos_soucer_demo/en/cart" method="post" id="add-to-cart-or-refresh">
+<form method="post" id="add-to-cart-or-refresh">
 <input type="hidden" name="token" value="4cb73f7e0e359184aa7e5ae63052ace7"/>
 <input type="hidden" name="id_product" value="2" id="product_page_product_id"/>
 <input type="hidden" name="id_customization" value="0" id="product_customization_id"/>
@@ -233,7 +234,7 @@ Tax excluded
 <p className="product-minimal-quantity">
 </p>
 <div className="add">
-<button className="btn btn-primary add-to-cart" data-button-action="add-to-cart" type="submit">
+<button className="btn btn-primary add-to-cart" data-button-action="add-to-cart" onClick={dispatch(addToCart(product))}>
 <i className="material-icons">card_travel</i>
 Add to cart
 </button>

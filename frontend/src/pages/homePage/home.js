@@ -9,7 +9,11 @@ import Slider from "../../component/Home/Slider";
 import Products from "../productsOfCategory/Products";
 
 function Home () {
-
+    const images = [
+        'https://via.placeholder.com/800x400?text=Slide+1',
+        'https://via.placeholder.com/800x400?text=Slide+2',
+        'https://via.placeholder.com/800x400?text=Slide+3',
+      ];
     return(
         <>
             
@@ -19,7 +23,7 @@ function Home () {
                 <div id="content-wrapper" className="col-lg-12 col-xs-12">
                 <section id="main">
                     <section id="content" className="page-home">
-                        <Slider />
+                        <Slider images={images}/>
                         <Services />
                         <Offers />
                         <NewCollection />

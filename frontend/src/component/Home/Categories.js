@@ -6,6 +6,8 @@ import '../Css/Categories.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { getCategory } from '../../Store/Actions/CategoryAction';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAnglesRight } from "@fortawesome/free-solid-svg-icons";
 
 function Categories(){
   const dispatch = useDispatch();
@@ -129,7 +131,7 @@ function Categories(){
             </div>
             </div>
             <div id="carousel-3212062330" className="owl-carousel owl-theme owl-loading" style={{position: "relative",transition: "all 0.75s ease"}}>
-            <div className="item">
+            {/* <div className="item">
             <div className="block-carousel-container">
             <div className="left-block">
             <div className="block-carousel-image-container image">
@@ -142,7 +144,7 @@ function Categories(){
             </div>
             </div>
             </div>
-            </div>
+            </div> */}
            
             <Carousel
       responsive={responsive}
@@ -161,10 +163,11 @@ function Categories(){
         <div className="block-carousel-image-container image">
         <div className="ap-more-info" data-id="4"></div>
         <a title={cat.name} href={`/products/${cat.id}/`}>
-        <img className="img-fluid" src={cat.image} />
+        <img className="img-fluid" src={cat.image} style={{ height: '500px', width: '100%', objectFit: 'cover' }}/>
         <div className="title">{cat.name}</div>
-        <div className="descript">Shop All</div>
-        </a>
+        <div className="descript">Shop All <FontAwesomeIcon icon={faAnglesRight} /> </div>
+        
+                       </a>
         </div>
         </div>
         </div>
