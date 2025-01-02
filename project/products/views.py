@@ -2,8 +2,8 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import generics
-from .models import Product,Color,Size
-from .serializers import ProductSerializer, ColorSerializer, SizeSerializer
+from .models import Product,Color,Size, ProductVariant
+from .serializers import ProductSerializer, ColorSerializer, SizeSerializer ,ProductVariantSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -42,3 +42,12 @@ def colorsProduct(request,product_id):
     color = product.colors.all()
     color_ser = ColorSerializer(color,many=True)
     return Response(color_ser.data)
+
+@api_view(['GET'])
+def get_product_variants(request, product_id):
+    """
+    API to get all variants of a specific product.
+    """
+    variants = ProductVariant.objects.filter(product_id=product_id)
+    serializer = ProductVariantSerializer(variants, many=True)
+    return Response(serializer.data)
