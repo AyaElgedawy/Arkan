@@ -1,5 +1,5 @@
 import { getProductDetails } from "../../Store/Actions/ProductAction";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 import { getColorsProduct, getSizesProduct } from "../../Store/Actions/ProductVariantAcrion";
@@ -7,7 +7,11 @@ import { Magnifier, GlassMagnifier, SideBySideMagnifier, PictureInPictureMagnifi
 import Slider from 'react-slick';
 import "./ProductDetails.css"
 import ReactImageMagnify from 'react-image-magnify';
-import { addToCart } from "../../Store/Actions/CartAction";
+import { UpdateToAddToCart, addToCart, getCartItems } from "../../Store/Actions/CartAction";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faPen } from "@fortawesome/free-solid-svg-icons";
+import { OpenModalContext } from "../../Context/Open_modal";
+import { Link } from "react-router-dom";
 function ProductDetails(){
     const { product_id } = useParams();
     const product = useSelector((state) => state.combineProductDetails.product);
@@ -15,17 +19,86 @@ function ProductDetails(){
     const colorsProduct = useSelector((state) => state.combineProductVariant.colorsProduct);
     const images = [product.image1,product.image2,product.image3,product.image4,product.image5]
 
-    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(product?.image1);
     const [backgroundPosition, setBackgroundPosition] = useState('center');
+    const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedColor, setSelectedColor] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+    const [actions,setActions] = useState("description")
+    const cart = useSelector((state) => state.combineCart.cart);
+    const [review,setReview] = useState(false)
+    const {openModalContext, setOpenModalContext} = useContext(OpenModalContext);
+    const [cartDictItem,setCartDictItem] = useState()
+    const [apologyToAddToCart,setAbologyToAddToCart]=useState(false)
     const dispatch = useDispatch()
+
+    useEffect(() => {
+      // Find if the product is already in the local cartDictionary state
+      setCartDictItem (cart.find(
+        (item) => item.product == product_id && item.size == selectedSize && item.color == selectedColor
+      ))
+      console.log("CartDictItem from useffect",cartDictItem);
+     }, [cart,selectedColor,selectedSize]);
+
+    const handleAddToCart = (e) => {
+      e.preventDefault();
+      dispatch(getCartItems())
+      if (cartDictItem) {
+        if(cartDictItem.quantity + +quantity <= product.quantity){
+        // Dispatch the update action with the cart item ID and the updated quantity
+           dispatch(UpdateToAddToCart(cartDictItem.id, cartDictItem.quantity + +quantity));
+        
+           setOpenModalContext(true)
+        }
+        else{
+          setAbologyToAddToCart(true)
+        }
+      } else {
+        if(+quantity <= product.quantity){
+          const productObj = {
+            product: product_id,
+            quantity: quantity,  // Initial quantity
+            size: selectedSize,
+            color: selectedColor,
+          };
+          // Dispatch the add to cart action with the new product
+          dispatch(addToCart(productObj));
+          console.log("Adding new product to cartDictionary:", product_id);
+          setOpenModalContext(true)
+        }
+        else{
+          setAbologyToAddToCart(true)
+        }
+      }
+    
+      console.log("Product found in cartDictionary:", cartDictItem);
+     
+      // Reset selected product, color, and size
+      // setSelectedColor(null);
+      // setSelectedSize(null);
+      // setQuantity(1)
+    };
+    useEffect(() => {
+      
+     console.log('selectedSize',selectedSize);
+     console.log('selectedColor',selectedColor);
+
+    }, [selectedSize,selectedColor]);
     useEffect(() => {
         // Fetch best seller products data from an API or your own data source
+       dispatch(getSizesProduct(product_id));
+       dispatch(getColorsProduct(product_id));
+       setSelectedImage(product?.image1);
+       console.log('product',product);
+       console.log('productimage1',product.image1);
+
+      }, [product]);
+     
+      useEffect(() => {
         dispatch(getProductDetails(product_id));
-        dispatch(getSizesProduct(product_id));
-        dispatch(getColorsProduct(product_id));
-        setSelectedImage(images[0]);
-        console.log('product',product);
-      }, [product_id]);
+        product_id??setSelectedImage(product.image1);
+       
+      }, []);
      
       const [zoomStyle, setZoomStyle] = useState({});
 
@@ -71,7 +144,7 @@ function ProductDetails(){
                   src: selectedImage,
                 },
                 largeImage: {
-                  src: selectedImage,
+                  src: product.image1,
                   width: 1200,
                   height: 1800,
                 },
@@ -93,64 +166,84 @@ function ProductDetails(){
             
             height: '150px',
             cursor: 'pointer',
-            border: image === selectedImage ? '2px solid #000' : 'none',
+            border: image == selectedImage ? '2px solid #000' : 'none',
             margin:' 20px'
           }}
-          className={`thumbnail ${image === selectedImage ? 'selected-thumbnail' : ''}`}
+          className={`thumbnail ${image == selectedImage ? 'selected-thumbnail' : ''}`}
           onClick={() => setSelectedImage(image)}
         />
         ))}
       </div>
     </div>
 </section>
-<div className="modal fade js-product-images-modal leo-product-modal" id="product-modal" data-thumbnails=".product-images-2">
-<div className="modal-dialog" role="document">
-<div className="modal-content">
-<div className="modal-body">
-<figure>
-<img className="js-modal-product-cover product-cover-modal" width="1024" src="https://demo1.leotheme.com/bos_soucer_demo/304-large_default/eiusmod-tempor.jpg" alt title itemProp="image"/>
-<figcaption className="image-caption">
-<div id="product-description-short" itemProp="description"><p>Nec consul possit delenit ei, illud forensibus vim ea, mei ubique sapientem et. Eos eu idque falli inimicus, ne odio dictas gloriatur sed, ea unum urbanitas dissentiet vel. Laoreet mandamus sed id. Efficiendi comprehensam cum in, iisque eleifend neglegentur quo te. Est choro quodsi inciderint no.</p></div>
-</figcaption>
-</figure>
-<aside id="thumbnails" className="thumbnails text-sm-center">
-<div className="product-images product-images-2">
-<div className="thumb-container">
-<img data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/304-large_default/eiusmod-tempor.jpg" className="thumb img-fluid js-modal-thumb selected " src="https://demo1.leotheme.com/bos_soucer_demo/304-medium_default/eiusmod-tempor.jpg" alt title width="400" itemProp="image"/>
+<div id="blockcart-modal" class={openModalContext?`modal fade in` :`modal fade`} style={{display: openModalContext ? 'block' : 'none'}}>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" onClick={()=>{setOpenModalContext(false)}}>
+          <span>×</span>
+        </button>
+        <h4 class="modal-title h6 text-sm-center" id="myModalLabel"><FontAwesomeIcon icon={faCheck} style={{color: "white"}} /> Product successfully added to your shopping cart</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-5 divide-right">
+            <div class="row">
+              <div class="col-md-6">
+                <img class="product-image" src={product.image1} alt={product.name} title="" itemProp="image"/>
+              </div>
+              <div class="col-md-6">
+                <h6 class="h6 product-name">{product?.name}</h6>
+                <p>${product.current_price}</p>
+                
+                                <span><strong>Size</strong>: {cartDictItem?sizesProduct.find((item)=>item.id==cartDictItem.size)?.name:sizesProduct.find((item)=>item.id==selectedSize)?.name}</span><br/>
+                                <span><strong>Color</strong>: {cartDictItem?colorsProduct.find((item)=>item.id==cartDictItem.color)?.name:colorsProduct.find((item)=>item.id==selectedColor)?.name}</span><br/>
+                                <p><strong>Quantity:</strong>&nbsp;{cartDictItem?cartDictItem.quantity:quantity}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="cart-content">
+                              <p class="cart-products-count">There are {cart.reduce((sum, item) => sum + item.quantity, 0)} items in your cart.</p>
+                            <p><strong>Total products:</strong>&nbsp;${cart.reduce((sum, item) => sum + +item.current_price*item.quantity, 0)}</p>
+              <p><strong>Total shipping:</strong>&nbsp;$7.00 </p>
+                            	{/* <p><strong>Taxes</strong>&nbsp;$0.00</p> */}
+                            <p><strong>Total:</strong>&nbsp;${cart.reduce((sum, item) => sum + +item.current_price*item.quantity, 0)+7}</p>
+              <div class="cart-content-btn">
+              <Link
+              to={`/products/${product.category}`}
+                                  
+              >
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Continue shopping</button>
+              </Link>
+
+              <Link
+              to={`/mycart`}
+                                  
+              >
+                <a href="//demo1.leotheme.com/bos_soucer_demo/en/cart?action=show" class="btn btn-primary"><FontAwesomeIcon icon={faCheck} style={{color: "white"}} /> Proceed to checkout</a>
+              </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-<div className="thumb-container">
-<img data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/305-large_default/eiusmod-tempor.jpg" className="thumb img-fluid js-modal-thumb" src="https://demo1.leotheme.com/bos_soucer_demo/305-medium_default/eiusmod-tempor.jpg" alt title width="400" itemProp="image"/>
-</div>
-<div className="thumb-container">
-<img data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/306-large_default/eiusmod-tempor.jpg" className="thumb img-fluid js-modal-thumb" src="https://demo1.leotheme.com/bos_soucer_demo/306-medium_default/eiusmod-tempor.jpg" alt title width="400" itemProp="image"/>
-</div>
-<div className="thumb-container">
-<img data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/307-large_default/eiusmod-tempor.jpg" className="thumb img-fluid js-modal-thumb" src="https://demo1.leotheme.com/bos_soucer_demo/307-medium_default/eiusmod-tempor.jpg" alt title width="400" itemProp="image"/>
-</div>
-<div className="thumb-container">
-<img data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/308-large_default/eiusmod-tempor.jpg" className="thumb img-fluid js-modal-thumb" src="https://demo1.leotheme.com/bos_soucer_demo/308-medium_default/eiusmod-tempor.jpg" alt title width="400" itemProp="image"/>
-</div>
-<div className="thumb-container">
-<img data-image-large-src="https://demo1.leotheme.com/bos_soucer_demo/309-large_default/eiusmod-tempor.jpg" className="thumb img-fluid js-modal-thumb" src="https://demo1.leotheme.com/bos_soucer_demo/309-medium_default/eiusmod-tempor.jpg" alt title width="400" itemProp="image"/>
-</div>
-</div>
-</aside>
-</div>
-</div>
-</div>
-</div>
+<div class={openModalContext?"modal-backdrop fade in":""}></div>
 </div>
 <div className="col-md-6 col-lg-6 col-xl-6 " style={{textAlign: "left"}}>
-<h1 className="h1 product-detail-name "  itemProp="name">{product.name}</h1>
+<h1 className="h1 product-detail-name "  itemProp="name">{product?.name}</h1>
 <div className="product-additional-info">
 <div className="social-sharing">
 <span>Share</span>
-<ul >
+{/* <ul >
 <li className="facebook icon-gray"><a href="http://www.facebook.com/sharer.php?u=https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-eiusmod-tempor.html" className="text-hide" title="Share" target="_blank">Share</a></li>
 <li className="twitter icon-gray"><a href="https://twitter.com/intent/tweet?text=Eiusmod tempor https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-eiusmod-tempor.html" className="text-hide" title="Tweet" target="_blank">Tweet</a></li>
 <li className="googleplus icon-gray"><a href="https://plus.google.com/share?url=https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-eiusmod-tempor.html" className="text-hide" title="Google+" target="_blank">Google+</a></li>
 <li className="pinterest icon-gray"><a href="http://www.pinterest.com/pin/create/button/?media=https://demo1.leotheme.com/bos_soucer_demo/304/eiusmod-tempor.jpg&amp;url=https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-eiusmod-tempor.html" className="text-hide" title="Pinterest" target="_blank">Pinterest</a></li>
-</ul>
+</ul> */}
 </div>
 </div>
 <div id="leo_product_reviews_block_extra" className="no-print">
@@ -176,20 +269,18 @@ Tax excluded
 <span className="delivery-information">Delivery: 1 to 3 weeks</span>
 </div>
 </div>
-<div id="product-description-short-2" className="description-short" itemProp="description"><p>Nec consul possit delenit ei, illud forensibus vim ea, mei ubique sapientem et. Eos eu idque falli inimicus, ne odio dictas gloriatur sed, ea unum urbanitas dissentiet vel. Laoreet mandamus sed id. Efficiendi comprehensam cum in, iisque eleifend neglegentur quo te. Est choro quodsi inciderint no.</p></div>
+<div id="product-description-short-2" className="description-short"><p>{product.description}</p></div>
 <div className="product-actions">
-<form method="post" id="add-to-cart-or-refresh">
-<input type="hidden" name="token" value="4cb73f7e0e359184aa7e5ae63052ace7"/>
-<input type="hidden" name="id_product" value="2" id="product_page_product_id"/>
-<input type="hidden" name="id_customization" value="0" id="product_customization_id"/>
+<form id="add-to-cart-or-refresh">
+
 <div className="product-variants">
 <div className="clearfix product-variants-item">
 <span className="control-label">Size</span>
 <ul id="group_1">
 {sizesProduct.map((size,index) => (
-    <li className="input-container float-xs-left" key={size.id}>
+    <li className="input-container float-xs-left" key={size.id} onClick={() =>setSelectedSize(size.id)}>
     <label>
-    <input className="input-radio" type="radio" data-product-attribute={size.id} name="group[1]" value={size.id} checked="checked"/>
+    <input className="input-radio" type="radio" data-product-attribute={size.id} value={size.id} checked={selectedSize==size.id && "checked"} />
     <span className="radio-label">{size.name}</span>
     </label>
     </li>
@@ -203,9 +294,9 @@ Tax excluded
 <span className="control-label">Color</span>
 <ul id="group_3">
 {colorsProduct.map((color,index) => (
-<li className="float-xs-left input-container">
+<li key={color.id} className="float-xs-left input-container" onClick={() =>setSelectedColor(color.id)}>
 <label>
-<input className="input-color" type="radio" data-product-attribute="3" name="group[3]" value="8"/>
+<input className="input-color" type="radio" value={color.id} checked={selectedColor == color.id ?? "checked"} style={{border:selectedColor == color.id && "1px solid black"}}/>
 <span className="color" style={{backgroundColor: color.code}}><span className="sr-only">{color.name}</span></span>
 </label>
 </li>
@@ -225,7 +316,7 @@ Tax excluded
 <span className="control-label">Quantity</span>
 <div className="product-quantity clearfix">
 <div className="qty clearfix">
-<input type="text" name="qty" id="quantity_wanted" value="1" className="input-group" min="1" aria-label="Quantity"/>
+<input type="number" id="quantity_wanted" value={quantity} className="input-group" min="1" aria-label="Quantity" onChange={(e)=>setQuantity(e.target.value)}/>
 </div>
 <span id="product-availability" style={{color: `${product.quantity> 0 ? "green" : "red"}`}}>
 {/* <i className="material-icons rtl-no-flip product-available">&#xE5CA;</i> */}
@@ -234,7 +325,7 @@ Tax excluded
 <p className="product-minimal-quantity">
 </p>
 <div className="add">
-<button className="btn btn-primary add-to-cart" data-button-action="add-to-cart" onClick={dispatch(addToCart(product))}>
+<button className="btn btn-primary add-to-cart" onClick={handleAddToCart}>
 <i className="material-icons">card_travel</i>
 Add to cart
 </button>
@@ -261,7 +352,7 @@ Add to cart
 </div>
 </div>
 </div>
-<input className="product-refresh ps-hidden-by-js" name="refresh" type="submit" value="Refresh"/>
+{/* <input className="product-refresh ps-hidden-by-js"/> */}
 </form>
 </div>
 </div>
@@ -269,20 +360,24 @@ Add to cart
 <div className="product-tabs tabs">
 <ul className="nav nav-tabs" role="tablist">
 <li className="nav-item">
-<a className="nav-link active" data-toggle="tab" href="#description" role="tab" aria-controls="description" aria-selected="true">Description</a>
+<a className= {`nav-link ${actions=="description" &&"active" } `}  aria-selected="true" onClick={()=>setActions("description")}>Description</a>
 </li>
 <li className="nav-item">
-<a className="nav-link" data-toggle="tab" href="#product-details" role="tab" aria-controls="product-details">Product Details</a>
+<a className={`nav-link ${actions=="details" &&"active" } `} onClick={()=>setActions("details")}>Product Details</a>
 </li>
 <li className="nav-item">
-<a className="nav-link leo-product-show-review-title" data-toggle="tab" href="#leo-product-show-review-content">Reviews</a>
+<a className={`nav-link ${actions=="reviews" &&"active" } leo-product-show-review-title`} onClick={()=>setActions("reviews")}>Reviews</a>
 </li>
 </ul>
 <div className="tab-content" id="tab-content">
-<div className="tab-pane fade in active" id="description" role="tabpanel">
-<div className="product-description"><p>Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe. The result? Cool, easy, chic looks with youthful elegance and unmistakable signature style. All the beautiful pieces are made in Italy and manufactured with the greatest attention. Now Fashion extends to a range of accessories including shoes, hats, belts and more!</p></div>
+  {/* description */}
+<div className={`tab-pane fade in ${actions=="description" &&"active" }`} id="description" role="tabpanel">
+<div className="product-description">
+  <p> {product.description} </p>
 </div>
-<div className="tab-pane fade" id="product-details" data-product="{&quot;id_shop_default&quot;:&quot;1&quot;,&quot;id_manufacturer&quot;:&quot;1&quot;,&quot;id_supplier&quot;:&quot;1&quot;,&quot;reference&quot;:&quot;demo_2&quot;,&quot;is_virtual&quot;:&quot;0&quot;,&quot;delivery_in_stock&quot;:null,&quot;delivery_out_stock&quot;:null,&quot;id_category_default&quot;:&quot;7&quot;,&quot;on_sale&quot;:&quot;0&quot;,&quot;online_only&quot;:&quot;0&quot;,&quot;ecotax&quot;:0,&quot;minimal_quantity&quot;:&quot;1&quot;,&quot;low_stock_threshold&quot;:null,&quot;low_stock_alert&quot;:&quot;0&quot;,&quot;price&quot;:&quot;$26.99&quot;,&quot;unity&quot;:null,&quot;unit_price_ratio&quot;:&quot;0.000000&quot;,&quot;additional_shipping_cost&quot;:&quot;0.00&quot;,&quot;customizable&quot;:&quot;0&quot;,&quot;text_fields&quot;:&quot;0&quot;,&quot;uploadable_files&quot;:&quot;0&quot;,&quot;redirect_type&quot;:&quot;404&quot;,&quot;id_type_redirected&quot;:&quot;0&quot;,&quot;available_for_order&quot;:&quot;1&quot;,&quot;available_date&quot;:null,&quot;show_condition&quot;:&quot;0&quot;,&quot;condition&quot;:&quot;new&quot;,&quot;show_price&quot;:&quot;1&quot;,&quot;indexed&quot;:&quot;1&quot;,&quot;visibility&quot;:&quot;both&quot;,&quot;cache_default_attribute&quot;:&quot;7&quot;,&quot;advanced_stock_management&quot;:&quot;0&quot;,&quot;date_add&quot;:&quot;2017-07-30 11:16:40&quot;,&quot;date_upd&quot;:&quot;2018-06-25 04:36:16&quot;,&quot;pack_stock_type&quot;:&quot;3&quot;,&quot;meta_description&quot;:null,&quot;meta_keywords&quot;:null,&quot;meta_title&quot;:null,&quot;link_rewrite&quot;:&quot;eiusmod-tempor&quot;,&quot;name&quot;:&quot;Eiusmod tempor&quot;,&quot;description&quot;:&quot;&lt;p&gt;Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman&#039;s wardrobe. The result? Cool, easy, chic looks with youthful elegance and unmistakable signature style. All the beautiful pieces are made in Italy and manufactured with the greatest attention. Now Fashion extends to a range of accessories including shoes, hats, belts and more!&lt;\/p&gt;&quot;,&quot;description_short&quot;:&quot;&lt;p&gt;Nec consul possit delenit ei, illud forensibus vim ea, mei ubique sapientem et. Eos eu idque falli inimicus, ne odio dictas gloriatur sed, ea unum urbanitas dissentiet vel. Laoreet mandamus sed id. Efficiendi comprehensam cum in, iisque eleifend neglegentur quo te. Est choro quodsi inciderint no.&lt;\/p&gt;&quot;,&quot;available_now&quot;:&quot;In stock&quot;,&quot;available_later&quot;:null,&quot;id&quot;:2,&quot;id_product&quot;:2,&quot;out_of_stock&quot;:2,&quot;new&quot;:0,&quot;id_product_attribute&quot;:7,&quot;quantity_wanted&quot;:1,&quot;extraContent&quot;:[],&quot;allow_oosp&quot;:0,&quot;category&quot;:&quot;basics&quot;,&quot;category_name&quot;:&quot;Basics&quot;,&quot;link&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/en\/basics\/2-eiusmod-tempor.html&quot;,&quot;attribute_price&quot;:0,&quot;price_tax_exc&quot;:26.99,&quot;price_without_reduction&quot;:26.99,&quot;reduction&quot;:0,&quot;specific_prices&quot;:[],&quot;quantity&quot;:292,&quot;quantity_all_versions&quot;:593,&quot;id_image&quot;:&quot;en-default&quot;,&quot;features&quot;:[{&quot;name&quot;:&quot;Compositions&quot;,&quot;value&quot;:&quot;Cotton&quot;,&quot;id_feature&quot;:&quot;5&quot;,&quot;position&quot;:&quot;4&quot;},{&quot;name&quot;:&quot;Styles&quot;,&quot;value&quot;:&quot;Casual&quot;,&quot;id_feature&quot;:&quot;6&quot;,&quot;position&quot;:&quot;5&quot;},{&quot;name&quot;:&quot;Properties&quot;,&quot;value&quot;:&quot;Short Sleeve&quot;,&quot;id_feature&quot;:&quot;7&quot;,&quot;position&quot;:&quot;6&quot;}],&quot;attachments&quot;:[],&quot;virtual&quot;:0,&quot;pack&quot;:0,&quot;packItems&quot;:[],&quot;nopackprice&quot;:0,&quot;customization_required&quot;:false,&quot;attributes&quot;:{&quot;1&quot;:{&quot;id_attribute&quot;:&quot;1&quot;,&quot;id_attribute_group&quot;:&quot;1&quot;,&quot;name&quot;:&quot;S&quot;,&quot;group&quot;:&quot;Size&quot;,&quot;reference&quot;:null,&quot;ean13&quot;:null,&quot;isbn&quot;:null,&quot;upc&quot;:null},&quot;3&quot;:{&quot;id_attribute&quot;:&quot;11&quot;,&quot;id_attribute_group&quot;:&quot;3&quot;,&quot;name&quot;:&quot;Black&quot;,&quot;group&quot;:&quot;Color&quot;,&quot;reference&quot;:null,&quot;ean13&quot;:null,&quot;isbn&quot;:null,&quot;upc&quot;:null}},&quot;rate&quot;:0,&quot;tax_name&quot;:&quot;&quot;,&quot;ecotax_rate&quot;:0,&quot;unit_price&quot;:&quot;&quot;,&quot;customizations&quot;:{&quot;fields&quot;:[]},&quot;id_customization&quot;:0,&quot;is_customizable&quot;:false,&quot;show_quantities&quot;:true,&quot;quantity_label&quot;:&quot;Items&quot;,&quot;quantity_discounts&quot;:[],&quot;customer_group_discount&quot;:0,&quot;images&quot;:[{&quot;bySize&quot;:{&quot;small_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;cart_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-cart_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:120,&quot;height&quot;:180},&quot;medium_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;home_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-home_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536}},&quot;small&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;medium&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536},&quot;legend&quot;:null,&quot;cover&quot;:&quot;1&quot;,&quot;id_image&quot;:&quot;304&quot;,&quot;position&quot;:&quot;1&quot;,&quot;associatedVariants&quot;:[]},{&quot;bySize&quot;:{&quot;small_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/305-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;cart_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/305-cart_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:120,&quot;height&quot;:180},&quot;medium_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/305-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;home_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/305-home_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/305-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536}},&quot;small&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/305-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;medium&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/305-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/305-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536},&quot;legend&quot;:null,&quot;cover&quot;:null,&quot;id_image&quot;:&quot;305&quot;,&quot;position&quot;:&quot;2&quot;,&quot;associatedVariants&quot;:[]},{&quot;bySize&quot;:{&quot;small_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/306-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;cart_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/306-cart_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:120,&quot;height&quot;:180},&quot;medium_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/306-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;home_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/306-home_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/306-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536}},&quot;small&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/306-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;medium&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/306-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/306-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536},&quot;legend&quot;:null,&quot;cover&quot;:null,&quot;id_image&quot;:&quot;306&quot;,&quot;position&quot;:&quot;3&quot;,&quot;associatedVariants&quot;:[]},{&quot;bySize&quot;:{&quot;small_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/307-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;cart_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/307-cart_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:120,&quot;height&quot;:180},&quot;medium_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/307-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;home_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/307-home_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/307-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536}},&quot;small&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/307-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;medium&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/307-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/307-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536},&quot;legend&quot;:null,&quot;cover&quot;:null,&quot;id_image&quot;:&quot;307&quot;,&quot;position&quot;:&quot;4&quot;,&quot;associatedVariants&quot;:[]},{&quot;bySize&quot;:{&quot;small_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/308-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;cart_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/308-cart_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:120,&quot;height&quot;:180},&quot;medium_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/308-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;home_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/308-home_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/308-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536}},&quot;small&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/308-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;medium&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/308-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/308-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536},&quot;legend&quot;:null,&quot;cover&quot;:null,&quot;id_image&quot;:&quot;308&quot;,&quot;position&quot;:&quot;5&quot;,&quot;associatedVariants&quot;:[]},{&quot;bySize&quot;:{&quot;small_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/309-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;cart_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/309-cart_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:120,&quot;height&quot;:180},&quot;medium_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/309-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;home_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/309-home_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/309-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536}},&quot;small&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/309-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;medium&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/309-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/309-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536},&quot;legend&quot;:null,&quot;cover&quot;:null,&quot;id_image&quot;:&quot;309&quot;,&quot;position&quot;:&quot;6&quot;,&quot;associatedVariants&quot;:[]}],&quot;cover&quot;:{&quot;bySize&quot;:{&quot;small_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;cart_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-cart_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:120,&quot;height&quot;:180},&quot;medium_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;home_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-home_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large_default&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536}},&quot;small&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-small_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:100,&quot;height&quot;:150},&quot;medium&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-medium_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:400,&quot;height&quot;:600},&quot;large&quot;:{&quot;url&quot;:&quot;https:\/\/demo1.leotheme.com\/bos_soucer_demo\/304-large_default\/eiusmod-tempor.jpg&quot;,&quot;width&quot;:1024,&quot;height&quot;:1536},&quot;legend&quot;:null,&quot;cover&quot;:&quot;1&quot;,&quot;id_image&quot;:&quot;304&quot;,&quot;position&quot;:&quot;1&quot;,&quot;associatedVariants&quot;:[]},&quot;has_discount&quot;:false,&quot;discount_type&quot;:null,&quot;discount_percentage&quot;:null,&quot;discount_percentage_absolute&quot;:null,&quot;discount_amount&quot;:null,&quot;discount_amount_to_display&quot;:null,&quot;price_amount&quot;:26.99,&quot;unit_price_full&quot;:&quot;&quot;,&quot;show_availability&quot;:true,&quot;availability_date&quot;:null,&quot;availability_message&quot;:&quot;In stock&quot;,&quot;availability&quot;:&quot;available&quot;}" role="tabpanel">
+</div>
+{/* product details */}
+<div className={`tab-pane fade in ${actions=="details" &&"active" } `} id="product-details">
 <div className="product-manufacturer">
 <a href="https://demo1.leotheme.com/bos_soucer_demo/en/1_fashion-manufacturer">
 <img src="https://demo1.leotheme.com/bos_soucer_demo/img/m/1.jpg" className="img img-thumbnail manufacturer-logo" alt="Fashion Manufacturer"/>
@@ -310,12 +405,13 @@ Add to cart
 </dl>
 </section>
 </div>
-<div className="tab-pane fade in" id="leo-product-show-review-content">
-<div id="product_reviews_block_tab">
-<a className="open-review-form" href="javascript:void(0)" data-id-product="2" data-is-logged data-product-link="https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-eiusmod-tempor.html">
-<i className="material-icons">&#xE150;</i>
-Be the first to write your review!
-</a>
+{/* reviews */}
+<div className={`tab-pane fade in ${actions=="reviews" && "active" }`} id="leo-product-show-review-content">
+<div id="product_reviews_block_tab" >
+ <button onClick={()=>setReview(true)}>
+ <FontAwesomeIcon icon={faPen} style={{color: "#63E6BE",}} />
+   Be the first to write your review!
+</button>
 </div>
 </div>
 </div>
@@ -385,15 +481,9 @@ Be the first to write your review!
 </div>
 
 <div className="button-container cart">
-<form action="https://demo1.leotheme.com/bos_soucer_demo/en/cart" method="post">
-<input type="hidden" name="token" value="4cb73f7e0e359184aa7e5ae63052ace7"/>
-<input type="hidden" value="290" className="quantity_product quantity_product_3" name="quantity_product"/>
-<input type="hidden" value="1" className="minimal_quantity minimal_quantity_3" name="minimal_quantity"/>
-<input type="hidden" value="13" className="id_product_attribute id_product_attribute_3" name="id_product_attribute"/>
-<input type="hidden" value="3" className="id_product" name="id_product"/>
-<input type="hidden" name="id_customization" value className="product_customization_id"/>
-<input type="hidden" className="input-group form-control qty qty_product qty_product_3" name="qty" value="1" data-min="1"/>
-<button className="btn btn-primary btn-product add-to-cart leo-bt-cart leo-bt-cart_3" data-button-action="add-to-cart" type="submit">
+<form>
+
+<button className="btn btn-primary btn-product add-to-cart leo-bt-cart leo-bt-cart_3" data-button-action="add-to-cart" >
 <span className="leo-loading cssload-speeding-wheel"></span>
 <span className="leo-bt-cart-content">
 <i className="icon-btn-product icon-cart material-icons shopping-cart">card_travel</i>
@@ -466,7 +556,7 @@ Be the first to write your review!
 </div>
 
 <div className="button-container cart">
-<form action="https://demo1.leotheme.com/bos_soucer_demo/en/cart" method="post">
+<form >
 <input type="hidden" name="token" value="4cb73f7e0e359184aa7e5ae63052ace7"/>
 <input type="hidden" value="292" className="quantity_product quantity_product_4" name="quantity_product"/>
 <input type="hidden" value="1" className="minimal_quantity minimal_quantity_4" name="minimal_quantity"/>

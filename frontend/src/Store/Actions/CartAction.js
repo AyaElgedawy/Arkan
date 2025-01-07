@@ -33,18 +33,18 @@ export const addToCart = (product) => (dispatch) => {
     
 // }
 
-export const UpdateToAddToCar = (cartItemId, newQuantity) => (dispatch) => {
-    try {
-        const { data } = axios.patch(`http://127.0.0.1:8000/cart/${cartItemId}`, {
-            quantity: newQuantity  // PATCH only the quantity field
-        });
+// export const UpdateToAddToCar = (cartItemId, newQuantity) => (dispatch) => {
+//     try {
+//         const { data } = axios.patch(`http://127.0.0.1:8000/cart/${cartItemId}`, {
+//             quantity: newQuantity  // PATCH only the quantity field
+//         });
 
-        dispatch({ type: 'CART_ITEM_UPDATE', payload: data });
+//         dispatch({ type: 'CART_ITEM_UPDATE', payload: data });
 
-    } catch (error) {
-        console.error('Failed to update cart item quantity', error);
-    }
-};
+//     } catch (error) {
+//         console.error('Failed to update cart item quantity', error);
+//     }
+// };
 
 export const UpdateToAddToCart = (cartItemId,newQuantity) => (dispatch) => {
     return axios.patch(`http://127.0.0.1:8000/cart/${cartItemId}`, {

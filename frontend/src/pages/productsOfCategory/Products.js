@@ -10,6 +10,7 @@ import { UpdateToAddToCart, addToCart, getCartItems } from '../../Store/Actions/
 import "../../style.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 function Products(){
   const { category_id } = useParams();
   const [hoverIndex, setHoverIndex] = useState(null);
@@ -29,7 +30,6 @@ function Products(){
       price: [],
     });
   const [query, setQuery] = useState("")
-   const[cartDictionary,setCartDictionary] =useState(cart)
     const currentCategory = categorys.find((category) => category.id == category_id); 
     const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -110,9 +110,7 @@ const [hoverIndexCard, setHoverIndexCard] = useState(null);
 
   
   const handleAddToCart = (product) => {
-    // Find if the product is already in the cart using the Redux state
-    const cartItem = cart.find((item) => item.product === product);
-    console.log("firstDictionary",cart);
+    
     // Find if the product is already in the local cartDictionary state
     const cartDictItem = cart.find(
       (item) => item.product === product && item.size === selectedSize && item.color === selectedColor
@@ -131,11 +129,7 @@ const [hoverIndexCard, setHoverIndexCard] = useState(null);
         color: selectedColor,
       };
   
-      // If product doesn't exist in cartDictionary, add it to local state and Redux
-      setCartDictionary((prevCartDictionary) => [
-        ...prevCartDictionary,
-        productObj, // Push the new product object directly
-      ]);
+     
   
       // Dispatch the add to cart action with the new product
       dispatch(addToCart(productObj));
@@ -143,20 +137,14 @@ const [hoverIndexCard, setHoverIndexCard] = useState(null);
       console.log("Adding new product to cartDictionary:", product);
     }
   
-    // Log the updated cartDictionary correctly after the state change
-    setTimeout(() => {
-      console.log("Updated cartDictionary:", cartDictionary);
-    }, 0); // Use a timeout to ensure the updated state is logged
-  
+    
     // Reset selected product, color, and size
     setSelectedProduct(null);
     setSelectedColor(null);
     setSelectedSize(null);
   };
   
-useEffect(()=>{
-  console.log("cartDictionary",cartDictionary);
-},[cart,cartDictionary])
+
 const handleFirstAddToCart = (productId) => {
   setSelectedProduct(productId); // Show options for the clicked product
   setSelectedSize(null)
@@ -405,12 +393,12 @@ const handleClickOutside = (event) => {
                           >
                             <div className="thumbnail-container">
                               <div className="product-image">
-                                <a
-                                  href={`/product_details/${product.id}`}
+                              <Link
+                                  to={`/product_details/${product.id}`}
                                   className="thumbnail product-thumbnail"
                                   onClick={() => setSelectedProduct(null)} // Close options on image click
                                 >
-                                  {hoverIndex === index ? (
+                                    {hoverIndex === index ? (
                                     <img
                                       className="img-fluid"
                                       src={`http://127.0.0.1:8000/${product.image2}`}
@@ -422,8 +410,10 @@ const handleClickOutside = (event) => {
                                       src={`http://127.0.0.1:8000/${product.image1}`}
                                       data-full-size-image-url={`http://127.0.0.1:8000/${product.image1}`}
                                     />
-                                  )}
-                                </a>
+                                  )}                              
+                                  </Link>
+                                  
+                                
                                 <span className="product-additional" data-idproduct="2"></span>
                       
                                 {/* Moved product-options inside product-image */}
@@ -468,7 +458,10 @@ const handleClickOutside = (event) => {
                               <div className="product-meta">
                               
                                   <h3 className="h3 product-title" itemprop="name">
-                                    <a href={`/product_details/${product.id}`}>{product.name}</a>
+                                    <Link
+                                  to={`/product_details/${product.id}`}
+                                  
+                                >{product.name}</Link>
                                   </h3>
                                 
                                 <div className="p-price">

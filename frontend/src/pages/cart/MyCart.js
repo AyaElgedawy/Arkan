@@ -1,17 +1,60 @@
 import { useDispatch, useSelector } from "react-redux";
-import { getCartItems } from "../../Store/Actions/CartAction";
-import { useEffect } from "react";
+import { UpdateToAddToCart, getCartItems, removeFromCart } from "../../Store/Actions/CartAction";
+import { useEffect, useState } from "react";
+import { getAllProducts } from "../../Store/Actions/ProductAction";
+import { getColor, getSize } from "../../Store/Actions/ProductVariantAcrion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronLeft, faChevronUp, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 
 function MyCart(){
+    const products = useSelector((state) => state.combineProductByCategory.products);
+    const colors = useSelector((state) => state.combineProductVariant.colors);
+    const sizes = useSelector((state) => state.combineProductVariant.sizes);
     const cart = useSelector((state) => state.combineCart.cart);
     const dispatch = useDispatch()
+    const [allItems,setAllItems] = useState(0)
+    const [price,setPrice] = useState(0)
     useEffect(()=>{
+        dispatch(getColor());
+        dispatch(getSize());
+        let totalItems = 0;
+        let totalPrice = 0;
+    cart.forEach(item => {
+      totalItems += item.quantity;
+      totalPrice += item.quantity*item.current_price
+    });
+    setAllItems(totalItems);
+    setPrice(totalPrice)
+    },[cart])
+    // console.log("cart",cart);
+    // console.log("image",products.find((product)=>product.id == 1)); // Check if this URL is valid
+    useEffect(()=>{
+        dispatch(getAllProducts());
         dispatch(getCartItems())
-    },[])
-    console.log("cart",cart);
-    console.log("image",cart[0].image1); // Check if this URL is valid
 
+        // cart?.map((item) =>{
+    //      
+    //     // allItems+= item.quantity
+    //     setPrice(price+item.quantity*products.find((product)=>product.id == item.product).current_price)
+    //     // price+=item.quantity*products.find((product)=>product.id == item.product).price
+    // })
+        
+    },[])
+    
+
+    const handleIncreaseQuantity=(cartItem)=>{
+    dispatch(UpdateToAddToCart(cartItem.id, cartItem.quantity + 1));
+   }
+
+   const handleDecreaseQuantity=(cartItem)=>{
+    if(cartItem.quantity==1){
+        dispatch(removeFromCart(cartItem.id))
+    }
+    else if(cartItem.quantity>0){
+        dispatch(UpdateToAddToCart(cartItem.id, cartItem.quantity - 1));
+    }
+}
     return(
         <>
         <section id="wrapper">
@@ -41,28 +84,29 @@ function MyCart(){
             <div className="cart-overview js-cart" data-refresh-url="//demo1.leotheme.com/bos_soucer_demo/en/cart?ajax=1&action=refresh">
                 <ul className="cart-items">
                 {cart?.map((item) =>(
+                    
                     <li className="cart-item" key={item.id}>
                     <div className="product-line-grid row">
 
                     <div className="product-line-grid-left col-md-3 col-xs-4">
                     <span className="product-image media-middle">
-                    <img src={item.image1} alt="Eiusmod tempor"/>
+                    <img src={products.find((product)=>product.id == item.product)?.image1} alt={products.find((product)=>product.id == item.product)?.name}/>
                     </span>
                     </div>
 
                     <div className="product-line-grid-body col-md-4 col-xs-8">
                     <div className="product-line-info">
-                    <a className="label" href="" data-id_customization="0">{item.product}</a>
+                    <a className="label" href="" data-id_customization="0">{products.find((product)=>product.id == item.product)?.name}</a>
                     </div>
 
                     <br/>
                     <div className="product-line-info">
                     <span className="label">Size:</span>
-                    <span className="value">S</span>
+                    <span className="value">{sizes.find((size)=>size.id == item.size)?.name}</span>
                     </div>
                     <div className="product-line-info">
                     <span className="label">Color:</span>
-                    <span className="value">Black</span>
+                    <span className="value">{colors.find((color)=>color.id == item.color)?.name}</span>
                     </div>
                     </div>
 
@@ -73,32 +117,33 @@ function MyCart(){
                     <div className="row">
                     <div className="col-md-5 col-xs-6 col-sp-12 qty">
                     <div className="input-group bootstrap-touchspin"><span className="input-group-addon bootstrap-touchspin-prefix" style={{display: "none"}}></span>
-                    <input className="js-cart-line-product-quantity form-control" data-down-url="https://demo1.leotheme.com/bos_soucer_demo/en/cart?update=1&amp;id_product=13&amp;id_product_attribute=61&amp;token=4cb73f7e0e359184aa7e5ae63052ace7&amp;op=down" data-up-url="https://demo1.leotheme.com/bos_soucer_demo/en/cart?update=1&amp;id_product=13&amp;id_product_attribute=61&amp;token=4cb73f7e0e359184aa7e5ae63052ace7&amp;op=up" data-update-url="https://demo1.leotheme.com/bos_soucer_demo/en/cart?update=1&amp;id_product=13&amp;id_product_attribute=61&amp;token=4cb73f7e0e359184aa7e5ae63052ace7" data-product-id="13" type="text" value="1" name="product-quantity-spin" min="1" style={{display: "block"}}/>
+                    <input className="js-cart-line-product-quantity form-control"
+                      type="text" value={item.quantity} name="product-quantity-spin" min="1" style={{display: "block"}}/>
                     <span className="input-group-addon bootstrap-touchspin-postfix" style={{display: "none"}}></span>
                     <span className="input-group-btn-vertical">
-                        <button className="btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button">
-                            <i className="material-icons touchspin-up"></i>
+                        <button className="align-top btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button" onClick={()=>handleIncreaseQuantity(item)}>
+                        <FontAwesomeIcon className="align-top" icon={faChevronUp} size="2xs" />
+                        </button>
+                            <button className=" align-top btn btn-touchspin js-touchspin js-decrease-product-quantity bootstrap-touchspin-down" type="button" onClick={()=>handleDecreaseQuantity(item)}>
+                            <FontAwesomeIcon className="align-top"  icon={faChevronDown} size="2xs"/>
                             </button>
-                            <button className="btn btn-touchspin js-touchspin js-decrease-product-quantity bootstrap-touchspin-down" type="button">
-                                <i className="material-icons touchspin-down"></i>
-                                </button>
                                 </span>
                                 </div>
                     </div>
                     <div className="col-md-7 col-xs-2 col-sp-12 price">
                     <span className="product-price">
                     <strong>
-                    $20.50
+                    {item.current_price *item.quantity}
                     </strong>
                     </span>
                     </div>
                     </div>
                     </div>
-                    <div className="col-md-2 col-xs-2 text-xs-right">
+                    <div className="col-md-2 col-xs-2 text-xs-right" onClick={()=>{dispatch(removeFromCart(item.id))}}>
                     <div className="cart-line-product-actions">
-                    <a className="remove-from-cart" rel="nofollow" href="https://demo1.leotheme.com/bos_soucer_demo/en/cart?delete=1&amp;id_product=2&amp;id_product_attribute=7&amp;token=4cb73f7e0e359184aa7e5ae63052ace7" data-link-action="delete-from-cart" data-id-product="2" data-id-product-attribute="7" data-id-customization>
-                    <i className="material-icons float-xs-left">delete</i>
-                    </a>
+                    <span className="remove-from-cart"  >
+                    <FontAwesomeIcon icon={faTrash} />
+                    </span>
                     </div>
                     </div>
                     </div>
@@ -119,7 +164,7 @@ function MyCart(){
             </div>
             </div>
             <a className="label" href="https://demo1.leotheme.com/bos_soucer_demo/en/">
-            <i className="material-icons">chevron_left</i>Continue shopping
+            <FontAwesomeIcon icon={faChevronLeft} />Continue shopping
             </a>
 
             </div>
@@ -130,9 +175,9 @@ function MyCart(){
             <div className="card-block" >
             <div className="cart-summary-line"   id="cart-subtotal-products">
             <span className="label" >
-            1 item
+                 {allItems}    item
             </span>
-            <span className="value">$20.50</span>
+            <span className="value">{price}</span>
             </div>
             <div className="cart-summary-line" id="cart-subtotal-shipping">
             <span className="label">
@@ -146,7 +191,7 @@ function MyCart(){
             <div className="card-block">
             <div className="cart-summary-line cart-total">
             <span className="label">Total (tax excl.)</span>
-            <span className="value">$27.50</span>
+            <span className="value">{price+7}</span>
             </div>
             <div className="cart-summary-line">
             <small className="label">Taxes</small>

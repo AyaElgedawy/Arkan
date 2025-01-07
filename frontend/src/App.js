@@ -10,10 +10,17 @@ import { Provider } from 'react-redux';
 import myStore from './Store/Store';
 import ProductDetails from './pages/productDetails/ProductDetails';
 import Product from './pages/productDetails/Product';
+import { OpenModalContext } from './Context/Open_modal';
+import { useEffect, useState } from 'react';
 
 function App() {
+  const [openModalContext, setOpenModalContext] = useState(false)
+  useEffect(()=>{
+    openModalContext? document.body.classList.add("modal-open") :document.body.classList.remove("modal-open")
+  })
   return (
     <div className="App">
+      <OpenModalContext.Provider value={{openModalContext,setOpenModalContext}} >
       <BrowserRouter>
       <Provider store={myStore}>
       <Header />
@@ -29,6 +36,7 @@ function App() {
       <Footer />
       </Provider>
       </BrowserRouter>
+      </OpenModalContext.Provider>
     </div>
   );
 }
