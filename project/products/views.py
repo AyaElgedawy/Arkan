@@ -44,6 +44,15 @@ def colorsProduct(request,product_id):
     return Response(color_ser.data)
 
 @api_view(['GET'])
+def get_all_variants(request):
+    """
+    API to get all variants of a specific product.
+    """
+    variants = ProductVariant.objects.all()
+    serializer = ProductVariantSerializer(variants, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
 def get_product_variants(request, product_id):
     """
     API to get all variants of a specific product.
