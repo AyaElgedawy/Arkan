@@ -12,14 +12,20 @@ import ProductDetails from './pages/productDetails/ProductDetails';
 import Product from './pages/productDetails/Product';
 import { OpenModalContext } from './Context/Open_modal';
 import { useEffect, useState } from 'react';
+import Sign_in from './pages/sign_in/sign_in';
+import { OpenSignInModalContext } from './Context/Open_SignIn_modal';
 
 function App() {
   const [openModalContext, setOpenModalContext] = useState(false)
+  const [openSignInModalContext, setOpenSignInModalContext] = useState(false)
+
   useEffect(()=>{
     openModalContext? document.body.classList.add("modal-open") :document.body.classList.remove("modal-open")
   })
   return (
     <div className="App">
+      <OpenSignInModalContext.Provider value={{openSignInModalContext,setOpenSignInModalContext}} >
+
       <OpenModalContext.Provider value={{openModalContext,setOpenModalContext}} >
       <BrowserRouter>
       <Provider store={myStore}>
@@ -35,8 +41,12 @@ function App() {
       </Switch>
       <Footer />
       </Provider>
+      <Sign_in/>
+
       </BrowserRouter>
       </OpenModalContext.Provider>
+      </OpenSignInModalContext.Provider>
+
     </div>
   );
 }

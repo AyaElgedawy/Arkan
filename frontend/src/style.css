@@ -587,6 +587,7 @@ select.form-control:focus::-ms-value {
     border-width: 1px 0
 }
 
+
 .form-control-static.form-control-sm,
 .input-group-sm>.form-control-static.form-control,
 .input-group-sm>.form-control-static.input-group-addon,
@@ -23911,9 +23912,16 @@ body#checkout #gift_message {
 }
 
 #blockcart-modal {
-    color: #111
+    color: #111;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out 0.2s, transform 0.3s ease-in-out 0.2s, visibility 0s linear 0.5s;
     
-    
+}
+#blockcart-modal.fade.in{
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 #blockcart-modal .modal-header {
@@ -34017,8 +34025,16 @@ body.leoflycart-active-push main {
 }
 
 .leo-quicklogin-modal {
-    font-size: 12px
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    opacity: 0;
+    visibility: hidden;
+    transition:  opacity 0.3s ease-in-out 0.3s,transform 0.3s ease-in-out 0.3s;
 }
+.leo-quicklogin-modal.fade.in {
+    opacity: 1;
+    visibility: visible;
+  }
 
 .leo-quicklogin-modal h3 {
     font-size: 18px;

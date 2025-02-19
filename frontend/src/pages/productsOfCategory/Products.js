@@ -5,7 +5,7 @@ import { getProductByCategoryId } from '../../Store/Actions/ProductAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { getCategory } from '../../Store/Actions/CategoryAction';
-import { getColor, getSize } from '../../Store/Actions/ProductVariantAcrion';
+import { getAllVariants, getColor, getSize } from '../../Store/Actions/ProductVariantAcrion';
 import { UpdateToAddToCart, addToCart, getCartItems } from '../../Store/Actions/CartAction';
 import "../../style.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,7 +23,7 @@ function Products(){
     const colors = useSelector((state) => state.combineProductVariant.colors);
     const sizes = useSelector((state) => state.combineProductVariant.sizes);
     const cart = useSelector((state) => state.combineCart.cart);
-
+    const variants  =useSelector((state)=> state.combineProductVariant.allVariants)
     const [filters, setFilters] = useState({
       size: [],
       color: [],
@@ -47,7 +47,11 @@ function Products(){
     dispatch(getCategory());
     dispatch(getColor());
     dispatch(getSize());
+
+    dispatch(getAllVariants())
     console.log(products);
+  console.log("All Variants",variants);
+
   }, [category_id],dispatch);
 
   useEffect(()=>{
@@ -204,7 +208,7 @@ const handleClickOutside = (event) => {
               <ul id="facet_22899" className='' >
               {colors.map((color,index) => (
               <li key={index}>
-              <label className="facet-label" for="facet_input_22899_0">
+              <label className="facet-label" htmlFor="facet_input_22899_0">
               <span className="custom-checkbox">
               <input id="facet_input_22899_0" 
               type="checkbox"
@@ -281,7 +285,7 @@ const handleClickOutside = (event) => {
               <ul id="facet_22899" className="collapse">
               {sizes.map((size,index) => (
               <li key={index}>
-              <label className="facet-label" for="facet_input_22899_0"
+              <label className="facet-label" htmlFor="facet_input_22899_0"
               onClick={() => handleFilterChange('size', size.id)}>
               <span className="custom-checkbo">
               <input id="facet_input_22899_0" 
@@ -388,8 +392,8 @@ const handleClickOutside = (event) => {
                             className="product-miniature js-product-miniature"
                             data-id-product="2"
                             data-id-product-attribute="7"
-                            itemscope
-                            itemtype="http://schema.org/Product"
+                            itemScope
+                            itemType="http://schema.org/Product"
                           >
                             <div className="thumbnail-container">
                               <div className="product-image">
@@ -457,7 +461,7 @@ const handleClickOutside = (event) => {
                       
                               <div className="product-meta">
                               
-                                  <h3 className="h3 product-title" itemprop="name">
+                                  <h3 className="h3 product-title" itemProp="name">
                                     <Link
                                   to={`/product_details/${product.id}`}
                                   

@@ -1,11 +1,16 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getCartItems } from "../../Store/Actions/CartAction";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faCircleChevronDown, faHeart, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import logo from "../../appagebuilder/images/logo.jpg"
+import { Link } from "react-router-dom";
+import { OpenModalContext } from "../../Context/Open_modal";
+import { OpenSignInModalContext } from "../../Context/Open_SignIn_modal";
 function Header() {
     const cart = useSelector((state) => state.combineCart.cart);
+    const {openSignInModalContext, setOpenSignInModalContext} = useContext(OpenSignInModalContext)
+
     const dispatch = useDispatch()
 useEffect(()=>{
     dispatch(getCartItems())
@@ -128,7 +133,8 @@ useEffect(()=>{
             </a>
             <ul className="popup-content dropdown-menu user-info">
             <li>
-            <a className="signin leo-quicklogin" data-enable-sociallogin="enable" data-type="popup" data-layout="login" href="javascript:void(0)" title="Log in to your customer account" rel="nofollow">
+           
+            <a  className="signin leo-quicklogin" onClick={()=>setOpenSignInModalContext(true)} data-enable-sociallogin="enable" data-type="popup" data-layout="login" href="javascript:void(0)" title="Log in to your customer account" rel="nofollow">
             <i className="fa fa-lock"></i>
             <span>Sign in</span>
             </a>

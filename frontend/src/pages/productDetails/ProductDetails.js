@@ -2,7 +2,7 @@ import { getProductDetails } from "../../Store/Actions/ProductAction";
 import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
-import { getColorsProduct, getSizesProduct } from "../../Store/Actions/ProductVariantAcrion";
+import { getColorsProduct, getSizesProduct, getVariantsProduct } from "../../Store/Actions/ProductVariantAcrion";
 import { Magnifier, GlassMagnifier, SideBySideMagnifier, PictureInPictureMagnifier } from 'react-image-magnifiers';
 import Slider from 'react-slick';
 import "./ProductDetails.css"
@@ -15,8 +15,8 @@ import { Link } from "react-router-dom";
 function ProductDetails(){
     const { product_id } = useParams();
     const product = useSelector((state) => state.combineProductDetails.product);
-    const sizesProduct = useSelector((state) => state.combineProductVariant.sizesProduct);
-    const colorsProduct = useSelector((state) => state.combineProductVariant.colorsProduct);
+    const variantProduct = useSelector((state) => state.combineProductVariant.variantsProduct);
+
     const images = [product.image1,product.image2,product.image3,product.image4,product.image5]
 
     const [selectedImage, setSelectedImage] = useState(product?.image1);
@@ -30,6 +30,7 @@ function ProductDetails(){
     const {openModalContext, setOpenModalContext} = useContext(OpenModalContext);
     const [cartDictItem,setCartDictItem] = useState()
     const [apologyToAddToCart,setAbologyToAddToCart]=useState(false)
+    
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -72,7 +73,8 @@ function ProductDetails(){
       }
     
       console.log("Product found in cartDictionary:", cartDictItem);
-     
+      setOpenModalContext(true)
+     console.log("modal context",openModalContext);
       // Reset selected product, color, and size
       // setSelectedColor(null);
       // setSelectedSize(null);
@@ -83,21 +85,23 @@ function ProductDetails(){
      console.log('selectedSize',selectedSize);
      console.log('selectedColor',selectedColor);
 
+
     }, [selectedSize,selectedColor]);
     useEffect(() => {
-        // Fetch best seller products data from an API or your own data source
-       dispatch(getSizesProduct(product_id));
-       dispatch(getColorsProduct(product_id));
+       
+
        setSelectedImage(product?.image1);
        console.log('product',product);
+       console.log('variantProduct', variantProduct);
        console.log('productimage1',product.image1);
 
-      }, [product]);
+      }, []);
      
       useEffect(() => {
         dispatch(getProductDetails(product_id));
         product_id??setSelectedImage(product.image1);
-       
+        dispatch(getVariantsProduct(product_id))
+        console.log("sizesOfProduct",variantProduct.map((item)=>item.size.name));
       }, []);
      
       const [zoomStyle, setZoomStyle] = useState({});
@@ -121,17 +125,17 @@ function ProductDetails(){
  
     return(
         <>
-<section id="wrapper">
-<div className="container">
+          <section id="wrapper">
+          <div className="container">
 
-<div className="row">
-<div id="content-wrapper" className="col-lg-12 col-xs-12">
-<section id="main" className="product-detail product-image-thumbs-left product-image-thumbs product-thumbs-left" itemScope itemType="https://schema.org/Product">
-<meta itemProp="url" content="https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-7-eiusmod-tempor.html#/1-size-s/11-color-black"/>
-<div className="row">
-    <div className="col-md-6 col-lg-6 col-xl-6">
-<section className="page-content" id="content" data-templateview="left" data-numberimage="4" data-numberimage1200="3" data-numberimage992="3" data-numberimage768="3" data-numberimage576="3" data-numberimage480="2" data-numberimage360="2" data-templatemodal="0" data-templatezoomtype="in" data-zoomposition="right" data-zoomwindowwidth="500" data-zoomwindowheight="500">
-<div className="images-container">
+          <div className="row">
+          <div id="content-wrapper" className="col-lg-12 col-xs-12">
+          <section id="main" className="product-detail product-image-thumbs-left product-image-thumbs product-thumbs-left" itemScope itemType="https://schema.org/Product">
+          <meta itemProp="url" content="https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-7-eiusmod-tempor.html#/1-size-s/11-color-black"/>
+          <div className="row">
+              <div className="col-md-6 col-lg-6 col-xl-6">
+          <section className="page-content" id="content" data-templateview="left" data-numberimage="4" data-numberimage1200="3" data-numberimage992="3" data-numberimage768="3" data-numberimage576="3" data-numberimage480="2" data-numberimage360="2" data-templatemodal="0" data-templatezoomtype="in" data-zoomposition="right" data-zoomwindowwidth="500" data-zoomwindowheight="500">
+          <div className="images-container">
 
  
      
@@ -176,7 +180,7 @@ function ProductDetails(){
       </div>
     </div>
 </section>
-<div id="blockcart-modal" class={openModalContext?`modal fade in` :`modal fade`} style={{display: openModalContext ? 'block' : 'none'}}>
+<div id="blockcart-modal" class={openModalContext?`modal fade in` :`modal fade`} style={{visibility: openModalContext ? 'block' : 'none'}}>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -196,8 +200,8 @@ function ProductDetails(){
                 <h6 class="h6 product-name">{product?.name}</h6>
                 <p>${product.current_price}</p>
                 
-                                <span><strong>Size</strong>: {cartDictItem?sizesProduct.find((item)=>item.id==cartDictItem.size)?.name:sizesProduct.find((item)=>item.id==selectedSize)?.name}</span><br/>
-                                <span><strong>Color</strong>: {cartDictItem?colorsProduct.find((item)=>item.id==cartDictItem.color)?.name:colorsProduct.find((item)=>item.id==selectedColor)?.name}</span><br/>
+                                <span><strong>Size</strong>: {cartDictItem?variantProduct.find((item)=>item.size.id==cartDictItem.size)?.name:variantProduct.find((item)=>item.size.id==selectedSize)?.name}</span><br/>
+                                <span><strong>Color</strong>: {cartDictItem?variantProduct.find((item)=>item.color.id==cartDictItem.color)?.name:variantProduct.find((item)=>item.color.id==selectedColor)?.name}</span><br/>
                                 <p><strong>Quantity:</strong>&nbsp;{cartDictItem?cartDictItem.quantity:quantity}</p>
               </div>
             </div>
@@ -277,11 +281,23 @@ Tax excluded
 <div className="clearfix product-variants-item">
 <span className="control-label">Size</span>
 <ul id="group_1">
-{sizesProduct.map((size,index) => (
-    <li className="input-container float-xs-left" key={size.id} onClick={() =>setSelectedSize(size.id)}>
+{selectedColor?variantProduct.map((item,index) => (
+    <li className="input-container float-xs-left" key={item.size.id} onClick={() =>setSelectedSize(item.size.id)}>
     <label>
-    <input className="input-radio" type="radio" data-product-attribute={size.id} value={size.id} checked={selectedSize==size.id && "checked"} />
-    <span className="radio-label">{size.name}</span>
+    <input className="input-radio" type="radio" data-product-attribute={item.size.id}
+     value={item.size.id}
+     checked={selectedSize==item.size.id && "checked"}
+     disabled={ selectedColor !== item.color.id } 
+      />
+    <span className="radio-label">{item.size.name}</span>
+    </label>
+    </li>
+)):
+variantProduct.map((item,index) => (
+    <li className="input-container float-xs-left" key={item.size.id} onClick={() =>setSelectedSize(item.size.id)}>
+    <label>
+    <input className="input-radio" type="radio" data-product-attribute={item.size.id} value={item.size.id} checked={selectedSize==item.size.id && "checked"} />
+    <span className="radio-label">{item.size.name}</span>
     </label>
     </li>
 ))}
@@ -293,11 +309,22 @@ Tax excluded
 <div className="clearfix product-variants-item">
 <span className="control-label">Color</span>
 <ul id="group_3">
-{colorsProduct.map((color,index) => (
-<li key={color.id} className="float-xs-left input-container" onClick={() =>setSelectedColor(color.id)}>
+{selectedSize?variantProduct.map((item,index) => (
+<li key={item.color.id} className="float-xs-left input-container" onClick={() =>setSelectedColor(item.color.id)}>
 <label>
-<input className="input-color" type="radio" value={color.id} checked={selectedColor == color.id ?? "checked"} style={{border:selectedColor == color.id && "1px solid black"}}/>
-<span className="color" style={{backgroundColor: color.code}}><span className="sr-only">{color.name}</span></span>
+<input className="input-color" type="radio" value={item.color.id}
+ checked={selectedColor == item.color.id ?? "checked"}
+disabled={ selectedSize !== item.size.id } 
+  style={{border:selectedColor == item.color.id && "1px solid black"}}/>
+<span className="color" style={{backgroundColor: item.color.code}}><span className="sr-only">{item.color.name}</span></span>
+</label>
+</li>
+))
+:variantProduct.map((item,index) => (
+<li key={item.color.id} className="float-xs-left input-container" onClick={() =>setSelectedColor(item.color.id)}>
+<label>
+<input className="input-color" type="radio" value={item.color.id} checked={selectedColor == item.color.id ?? "checked"} style={{border:selectedColor == item.color.id && "1px solid black"}}/>
+<span className="color" style={{backgroundColor: item.color.code}}><span className="sr-only">{item.color.name}</span></span>
 </label>
 </li>
 ))}
