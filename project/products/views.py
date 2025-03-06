@@ -54,9 +54,6 @@ def get_all_variants(request):
 
 @api_view(['GET'])
 def get_product_variants(request, product_id):
-    """
-    API to get all variants of a specific product.
-    """
-    variants = ProductVariant.objects.filter(product_id=product_id)
+    variants = ProductVariant.objects.filter(product=product_id)
     serializer = ProductVariantSerializer(variants, many=True)
     return Response(serializer.data)

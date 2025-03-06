@@ -18,6 +18,9 @@ class SizeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ProductVariantSerializer(serializers.ModelSerializer):
+    color = ColorSerializer()  
+    size = SizeSerializer()   
+
     class Meta:
         model = ProductVariant
-        fields  = '__all__'
+        fields = ['id', 'product', 'size', 'color', 'quantity']

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product,Size,Color
+from .models import Product,Size,Color, ProductVariant
 from django.utils.html import format_html
 
 # Register your models here.
@@ -18,3 +18,4 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'category','quantity', 'current_price')
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Size)
+admin.site.register(ProductVariant)
