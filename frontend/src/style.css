@@ -34255,7 +34255,7 @@ body.leoflycart-active-push main {
 .leo-login-form.leo-form-inactive {
     right: 0;
     transform: translateX(-100%);
-    -moz-transform: translateX(-100%));
+    -moz-transform: translateX(-100%);
     -webkit-transform: translateX(-100%);
     -o-transform: translateX(-100%);
     -ms-transform: translateX(-100%)
@@ -34264,7 +34264,7 @@ body.leoflycart-active-push main {
 .leo-register-form.leo-form-inactive {
     left: 0;
     transform: translateX(100%);
-    -moz-transform: translateX(100%));
+    -moz-transform: translateX(100%);
     -webkit-transform: translateX(100%);
     -o-transform: translateX(100%);
     -ms-transform: translateX(100%)
@@ -34282,7 +34282,9 @@ body.leoflycart-active-push main {
 .lql-calllogin {
     display: none
 }
-
+.lql-calllogin-action :hover{
+    color:#FFD314
+}
 .leo-form.full-width .lql-callregister,
 .leo-form.full-width .lql-calllogin {
     display: block

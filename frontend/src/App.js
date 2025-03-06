@@ -14,20 +14,26 @@ import { OpenModalContext } from './Context/Open_modal';
 import { useEffect, useState } from 'react';
 import Sign_in from './pages/sign_in/sign_in';
 import { OpenSignInModalContext } from './Context/Open_SignIn_modal';
+import { LoggedInContext } from './Context/loggedUser';
+import { AuthProvider } from './Context/AuthContext';
 
 function App() {
   const [openModalContext, setOpenModalContext] = useState(false)
   const [openSignInModalContext, setOpenSignInModalContext] = useState(false)
+  const [contextLoggedIn, setContextLoggenIn] = useState("");
 
   useEffect(()=>{
     openModalContext? document.body.classList.add("modal-open") :document.body.classList.remove("modal-open")
   })
   return (
     <div className="App">
+      <LoggedInContext.Provider value={{contextLoggedIn, setContextLoggenIn}}>
+
       <OpenSignInModalContext.Provider value={{openSignInModalContext,setOpenSignInModalContext}} >
 
       <OpenModalContext.Provider value={{openModalContext,setOpenModalContext}} >
       <BrowserRouter>
+      <AuthProvider>
       <Provider store={myStore}>
       <Header />
       
@@ -39,14 +45,15 @@ function App() {
       <Route exact path={"/product"} component={Product} />
 
       </Switch>
+      <Sign_in/>
       <Footer />
       </Provider>
-      <Sign_in/>
+      </AuthProvider>
 
       </BrowserRouter>
       </OpenModalContext.Provider>
       </OpenSignInModalContext.Provider>
-
+    </LoggedInContext.Provider>
     </div>
   );
 }
