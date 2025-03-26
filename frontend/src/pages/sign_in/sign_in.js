@@ -4,12 +4,14 @@ import { OpenSignInModalContext } from "../../Context/Open_SignIn_modal";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../../Store/Actions/userAction";
+import { AuthContext } from "../../Context/AuthContext";
 
 function Sign_in(){
     const {openSignInModalContext, setOpenSignInModalContext} = useContext(OpenSignInModalContext)
     const [activeForm,setActiveForm]  = useState('login')
     const users = useSelector((state) => state.combineUsers.users);
     const dispatch = useDispatch()
+    
     // register
   const [signedUp, setSignedUp] = useState(false);
   
@@ -117,16 +119,10 @@ function Sign_in(){
       });
     }
   };
-  useEffect(() => {
-      
-    console.log("userRegister",userRegister);
-    console.log("errors",errosRegister.emailError);
-   }, [userRegister]);
+  
    useEffect(() => {
     dispatch(getAllUsers())
-    console.log("users",users);
-    console.log(users.some((user)=>user.email==userRegister.email));
-      
+    
    }, [userRegister.email]);
   const submitRegister = async (e) => {
     e.preventDefault();
@@ -167,6 +163,105 @@ function Sign_in(){
     }
   };
 //   end register
+
+//login
+  const authContext = useContext(AuthContext);
+  const [loginError, setLoginError] = useState("") 
+
+  const [userData, setUserData] = useState({
+    username: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState({
+    usernameError: "",
+    passwordError: "",
+  });
+
+  const [valid, setValid] = useState({
+    username: true,
+    password: true,
+  });
+
+  const changeUserData = (e) => {
+    if (e.target.name === "email") {
+      const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z0-9]+[.][a-zA-Z]+$/;
+      // const nameRegex = /^[a-zA-Z0-9_]{2,}$/;
+      setValid({
+        ...valid,
+        username:
+          emailRegex.test(e.target.value) ,
+      });
+
+      setUserData({
+        ...userData,
+        username: e.target.value,
+      });
+      setErrors({
+        ...errors,
+        usernameError:
+          e.target.value.length == 0
+            ? "This Field Is Required"
+            : !valid.email && "please enter a valid email or username",
+      });
+    } else if (e.target.name === "password") {
+      const passRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7,}$/; ///[\D]*.{8,}/;
+      
+      setValid({
+        ...valid,
+        password: passRegex.test(e.target.value),
+      });
+      setUserData({
+        ...userData,
+        password: e.target.value,
+      });
+      setErrors({
+        ...errors,
+        passwordError:
+          e.target.value.length === 0
+            ? "This Field Is Required"
+            : !valid.password &&
+              "please enter at least 8 characters containes special characters",
+      });
+    }
+  };
+  const submitData = async (e) => {
+    e.preventDefault();
+    
+            try {
+              const response = await axios.post(
+                "http://127.0.0.1:8000/accounts/login/",
+                userData
+              );
+              console.log(response)
+              console.log(response.data.user);
+              console.log(response.status);
+              
+              if (response.status === 200) {
+                // authContext.login(response.data.jwt, response.data.user);
+                localStorage.setItem("token", response.data.jwt);
+                localStorage.setItem("user", JSON.stringify(response.data.user));
+                // response.data.user.email_verified && setConfirm('Your Email Verified successfully')
+
+                authContext?.login(response?.data?.jwt, response?.data?.user);
+                setOpenSignInModalContext(false)
+              }
+              
+            } catch (error) {
+              console.log(error)
+              console.log(error.response.data.detail);
+
+              if(error.response.data.detail  === 'User not found!') {
+                setError(error.response.data.detail)
+              }
+              if(error.response.data.detail=== 'Email not verified! Please verify your email.'){
+                setError(error.response.data.detail)
+              }
+              
+            }
+};
+//end login
     return ReactDOM.createPortal(
         <>
             <div className={`modal leo-quicklogin-modal fade ${openSignInModalContext ? 'in' : ''}`}
@@ -181,7 +276,6 @@ function Sign_in(){
                                 <span aria-hidden="true">×</span>
                             </button>
                         </div>
-                        
                         <div className="modal-body">
                             <div className="leo-quicklogin-form row">
                                 <div className={`leo-form leo-login-form col-sm-6 full-width ${activeForm=="login" || activeForm=="reset"?"leo-form-active": "leo-form-inactive"}`}>
@@ -194,17 +288,34 @@ function Sign_in(){
                                             Login to your account
                                         </span>		
                                     </h3>
+                                   {/* login */}
                                     <form className="lql-form-content leo-login-form-content"
+                                    onSubmit={(e) => submitData(e)}
                                     >
                                         <div className="form-group lql-form-mesg has-success">					
                                         </div>			
                                         <div className="form-group lql-form-mesg has-danger">					
                                         </div>
                                         <div className="form-group lql-form-content-element">
-                                            <input type="email" className="form-control lql-email-login" name="lql-email-login" required="" placeholder="Email Address"/>
+                                            <input type="email" className="form-control lql-email-login"
+                                             name="email"
+                                             onChange={(e) => changeUserData(e)}
+                                             error={errors.usernameError}
+                                             required="" placeholder="Email Address"/>
+                                             {errors.usernameError && (  
+                                                <p style={{ color: "red", fontSize: "14px", marginTop: "5px" }}>
+                                                    {errors.usernameError}
+                                                </p>)}
                                         </div>
                                         <div className="form-group lql-form-content-element">
-                                            <input type="password" className="form-control lql-pass-login" name="lql-pass-login" required="" placeholder="Password"/>
+                                            <input type="password" className="form-control lql-pass-login"
+                                             onChange={(e) => changeUserData(e)}
+                                             error={errors.passwordError}
+                                             name="password" required="" placeholder="Password"/>
+                                             {errors.passwordError && (  
+                                                <p style={{ color: "red", fontSize: "14px", marginTop: "5px" }}>
+                                                    {errors.passwordError}
+                                                </p>)}
                                         </div>
                                         <div className="form-group row lql-form-content-element">				
                                             <div className="col-xs-6">
@@ -231,6 +342,7 @@ function Sign_in(){
                                     </form>
                         <div className="leo-resetpass-form" style={{display: activeForm=="reset"? "block":"none"}}>
                             <h3>Reset Password</h3>
+                        {/* reset password */}
                             <form className="lql-form-content leo-resetpass-form-content" action="#" method="post">
                                 <div className="form-group lql-form-mesg has-success">					
                                 </div>			
@@ -258,6 +370,7 @@ function Sign_in(){
                                     <h3 className="leo-register-title">
                                         New Account Register
                                     </h3>
+                                    {/* register */}
                                     <form className="lql-form-content leo-register-form-content" onSubmit={(e) => submitRegister(e)}>
                                         <div className="form-group lql-form-mesg has-success">					
                                         </div>			
