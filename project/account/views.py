@@ -34,7 +34,6 @@ def user_login(request):
     if request.method == 'POST':
         username = request.data.get('username')
         password = request.data.get('password')
-        user = None
         if '@' in username:
             try:
                 user = CustomUser.objects.filter(email=username).first()
