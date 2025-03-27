@@ -7,14 +7,17 @@ import logo from "../../appagebuilder/images/logo.jpg"
 import { Link } from "react-router-dom";
 import { OpenModalContext } from "../../Context/Open_modal";
 import { OpenSignInModalContext } from "../../Context/Open_SignIn_modal";
+import { LoggedInContext } from "../../Context/loggedUser";
 function Header() {
     const cart = useSelector((state) => state.combineCart.cart);
     const {openSignInModalContext, setOpenSignInModalContext} = useContext(OpenSignInModalContext)
-
+    const user  =JSON.parse (localStorage.getItem("user"))
     const dispatch = useDispatch()
-useEffect(()=>{
-    dispatch(getCartItems())
-},[])
+    useEffect(()=>{
+        dispatch(getCartItems())
+    },[])
+
+    
     return(
        <>
         <header id="header">
@@ -125,10 +128,12 @@ useEffect(()=>{
             </div>
 
 
+            
+           
             <div className="userinfo-selector dropdown js-dropdown popup-over">
             <a href="javascript:void(0)" data-toggle="dropdown" className="popup-title" title="Account">
             <i className="fa fa-user"></i>
-            <span className="hidden-md-down">My account</span>
+            {user?<span className="hidden-md-">{user.username}</span>:<span className="hidden-md-down">My account</span>}
             <i className="fa fa-angle-down" aria-hidden="true"></i>
             </a>
             <ul className="popup-content dropdown-menu user-info">
@@ -141,6 +146,7 @@ useEffect(()=>{
             </li>
             </ul>
             </div>
+
             </div> </div>
             </div>
             </div>

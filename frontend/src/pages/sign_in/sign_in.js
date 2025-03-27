@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import { OpenSignInModalContext } from "../../Context/Open_SignIn_modal";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllUsers } from "../../Store/Actions/userAction";
+import { filterUserByEmail, getAllUsers } from "../../Store/Actions/userAction";
 import { AuthContext } from "../../Context/AuthContext";
+import { LoggedInContext } from "../../Context/loggedUser";
 
 function Sign_in(){
     const {openSignInModalContext, setOpenSignInModalContext} = useContext(OpenSignInModalContext)
@@ -166,6 +167,7 @@ function Sign_in(){
 
 //login
   const authContext = useContext(AuthContext);
+
   const [loginError, setLoginError] = useState("") 
 
   const [userData, setUserData] = useState({
@@ -260,8 +262,10 @@ function Sign_in(){
               }
               
             }
+
 };
 //end login
+
     return ReactDOM.createPortal(
         <>
             <div className={`modal leo-quicklogin-modal fade ${openSignInModalContext ? 'in' : ''}`}

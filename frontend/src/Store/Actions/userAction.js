@@ -11,3 +11,4 @@ export const getAllUsers = () => (dispatch) => {
     .catch((err) => console.log(err))
     
 }
+
