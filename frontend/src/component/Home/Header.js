@@ -255,18 +255,20 @@ function Header() {
 
             <a className="ap-btn-wishlist" href="//demo1.leotheme.com/bos_soucer_demo/en/module/leofeature/mywishlist" title="Wishlist"><FontAwesomeIcon icon={faHeart} size="xl" /> <span className="total-wapper">(<span className="ap-total-wishlist ap-total"></span>)</span> </a>
 
-            <div id="cart-block">
-            <div className="blockcart cart-preview inactive" >
-            <div className="header">
-            <span className="text-top">
-            <FontAwesomeIcon icon={faCartShopping} size="xl" />
-            <span className="text-cart">My Cart</span>
-            <span className="cart-products-count"> {`(${cart.length})`} </span>
-                            <FontAwesomeIcon icon={faCircleChevronDown} />
-            </span>
-            </div>
-            </div>
-            </div>
+           <Link to={"/mycart"}>
+                <div id="cart-block">
+                <div className="blockcart cart-preview inactive" >
+                <div className="header">
+                <span className="text-top">
+                <FontAwesomeIcon icon={faCartShopping} size="xl" />
+                <span className="text-cart">My Cart</span>
+                <span className="cart-products-count"> {`(${cart.length})`} </span>
+                                <FontAwesomeIcon icon={faCircleChevronDown} />
+                </span>
+                </div>
+                </div>
+                </div>
+           </Link>
             </div> </div>
             </div>
             </div>
