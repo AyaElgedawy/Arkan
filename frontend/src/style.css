@@ -20665,7 +20665,6 @@ body#category .product_list.grid .ajax_block_product {
 }
 
 .product-image img {
-    height: 180px; /* Adjust height as needed */
     width: 100%; /* Full width */
     object-fit: cover; /* Maintain aspect ratio and cover the space */
   }

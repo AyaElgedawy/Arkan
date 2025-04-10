@@ -413,6 +413,7 @@ const handleClickOutside = (event) => {
                                       className="img-fluid"
                                       src={`http://127.0.0.1:8000/${product.image1}`}
                                       data-full-size-image-url={`http://127.0.0.1:8000/${product.image1}`}
+                                      
                                     />
                                   )}                              
                                   </Link>
