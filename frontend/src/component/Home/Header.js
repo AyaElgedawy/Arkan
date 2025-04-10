@@ -8,16 +8,25 @@ import { Link } from "react-router-dom";
 import { OpenModalContext } from "../../Context/Open_modal";
 import { OpenSignInModalContext } from "../../Context/Open_SignIn_modal";
 import { LoggedInContext } from "../../Context/loggedUser";
+import {AuthContext} from "../../Context/AuthContext"
 function Header() {
     const cart = useSelector((state) => state.combineCart.cart);
     const {openSignInModalContext, setOpenSignInModalContext} = useContext(OpenSignInModalContext)
     const user  =JSON.parse (localStorage.getItem("user"))
+    const authContext = useContext(AuthContext);
+    const { contextLoggedIn, setContextLoggenIn } = useContext(LoggedInContext);
+
     const dispatch = useDispatch()
     useEffect(()=>{
         dispatch(getCartItems())
     },[])
 
-    
+    const logOut = () => {
+        localStorage.removeItem("user");
+        setContextLoggenIn("");
+        authContext.logout();
+        };
+         
     return(
        <>
         <header id="header">
@@ -137,13 +146,21 @@ function Header() {
             <i className="fa fa-angle-down" aria-hidden="true"></i>
             </a>
             <ul className="popup-content dropdown-menu user-info">
+            {user? 
             <li>
-           
-            <a  className="signin leo-quicklogin" onClick={()=>setOpenSignInModalContext(true)} data-enable-sociallogin="enable" data-type="popup" data-layout="login" href="javascript:void(0)" title="Log in to your customer account" rel="nofollow">
+           <Link  className="signin leo-quicklogin" onClick={logOut} to={"/"} title="Log out from your customer account" >
+           <i className="fa fa-lock"></i>
+           <span>Logout</span>
+           </Link>
+           </li>: 
+
+            <li>
+            <a  className="signin leo-quicklogin" onClick={()=>setOpenSignInModalContext(true)}  title="Log in to your customer account" >
             <i className="fa fa-lock"></i>
             <span>Sign in</span>
             </a>
             </li>
+            }
             </ul>
             </div>
 
