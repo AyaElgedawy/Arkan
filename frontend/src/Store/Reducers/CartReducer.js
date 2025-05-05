@@ -4,7 +4,7 @@ const INITIAL_VALUES = {
 
 const CartReducer = (state = INITIAL_VALUES, action) => {
     switch (action.type) {
-        case 'GET_CART_ITEMS':
+        case 'SET_CART_ITEMS':
             return{
                 ...state,
                 cart: action.payload

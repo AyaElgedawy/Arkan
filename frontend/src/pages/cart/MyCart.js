@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { UpdateToAddToCart, getCartItems, removeFromCart } from "../../Store/Actions/CartAction";
-import { useEffect, useState } from "react";
+import { UpdateToAddToCart, addToCart, getCartItems, minusFromCart, removeFromCart } from "../../Store/Actions/CartAction";
+import { useContext, useEffect, useState } from "react";
 import { getAllProducts } from "../../Store/Actions/ProductAction";
 import { getColor, getSize } from "../../Store/Actions/ProductVariantAcrion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronLeft, faChevronUp, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { AuthContext } from "../../Context/AuthContext";
 
 
 function MyCart(){
@@ -15,6 +16,8 @@ function MyCart(){
     const dispatch = useDispatch()
     const [allItems,setAllItems] = useState(0)
     const [price,setPrice] = useState(0)
+    const authContext = useContext(AuthContext);
+    const {currentUser, setCurrentUser} = useContext(AuthContext);
     useEffect(()=>{
         dispatch(getColor());
         dispatch(getSize());
@@ -31,7 +34,7 @@ function MyCart(){
     // console.log("image",products.find((product)=>product.id == 1)); // Check if this URL is valid
     useEffect(()=>{
         dispatch(getAllProducts());
-        dispatch(getCartItems())
+        dispatch(getCartItems(currentUser))
 
         // cart?.map((item) =>{
     //      
@@ -43,18 +46,18 @@ function MyCart(){
     },[])
     
 
-    const handleIncreaseQuantity=(cartItem)=>{
-    dispatch(UpdateToAddToCart(cartItem.id, cartItem.quantity + 1));
-   }
+//     const handleIncreaseQuantity=(cartItem)=>{
+//     dispatch(UpdateToAddToCart(cartItem.id, cartItem.quantity + 1));
+//    }
 
-   const handleDecreaseQuantity=(cartItem)=>{
-    if(cartItem.quantity==1){
-        dispatch(removeFromCart(cartItem.id))
-    }
-    else if(cartItem.quantity>0){
-        dispatch(UpdateToAddToCart(cartItem.id, cartItem.quantity - 1));
-    }
-}
+//    const handleDecreaseQuantity=(cartItem)=>{
+//     if(cartItem.quantity==1){
+//         dispatch(removeFromCart(cartItem.id))
+//     }
+//     else if(cartItem.quantity>0){
+//         dispatch(UpdateToAddToCart(cartItem.id, cartItem.quantity - 1));
+//     }
+// }
     return(
         <>
         <section id="wrapper">
@@ -121,10 +124,10 @@ function MyCart(){
                       type="text" value={item.quantity} name="product-quantity-spin" min="1" style={{display: "block"}}/>
                     <span className="input-group-addon bootstrap-touchspin-postfix" style={{display: "none"}}></span>
                     <span className="input-group-btn-vertical">
-                        <button className="align-top btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button" onClick={()=>handleIncreaseQuantity(item)}>
+                        <button className="align-top btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button" onClick={()=>dispatch(addToCart(item,currentUser))}>
                         <FontAwesomeIcon className="align-top" icon={faChevronUp} size="2xs" />
                         </button>
-                            <button className=" align-top btn btn-touchspin js-touchspin js-decrease-product-quantity bootstrap-touchspin-down" type="button" onClick={()=>handleDecreaseQuantity(item)}>
+                            <button className=" align-top btn btn-touchspin js-touchspin js-decrease-product-quantity bootstrap-touchspin-down" type="button" onClick={()=>dispatch(minusFromCart(item,currentUser))}>
                             <FontAwesomeIcon className="align-top"  icon={faChevronDown} size="2xs"/>
                             </button>
                                 </span>

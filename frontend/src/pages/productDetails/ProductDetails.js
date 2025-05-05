@@ -9,7 +9,7 @@ import "./ProductDetails.css"
 import ReactImageMagnify from 'react-image-magnify';
 import { UpdateToAddToCart, addToCart, getCartItems } from "../../Store/Actions/CartAction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faPen, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { OpenModalContext } from "../../Context/Open_modal";
 import { Link } from "react-router-dom";
 function ProductDetails(){
@@ -133,7 +133,7 @@ function ProductDetails(){
           <section id="main" className="product-detail product-image-thumbs-left product-image-thumbs product-thumbs-left" itemScope itemType="https://schema.org/Product">
           <meta itemProp="url" content="https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-7-eiusmod-tempor.html#/1-size-s/11-color-black"/>
           <div className="row">
-              <div className="col-md-6 col-lg-6 col-xl-6">
+<div className="col-md-6 col-lg-6 col-xl-6">
           <section className="page-content" id="content" data-templateview="left" data-numberimage="4" data-numberimage1200="3" data-numberimage992="3" data-numberimage768="3" data-numberimage576="3" data-numberimage480="2" data-numberimage360="2" data-templatemodal="0" data-templatezoomtype="in" data-zoomposition="right" data-zoomwindowwidth="500" data-zoomwindowheight="500">
           <div className="images-container">
 
@@ -148,7 +148,7 @@ function ProductDetails(){
                   src: selectedImage,
                 },
                 largeImage: {
-                  src: product.image1,
+                  src: selectedImage,
                   width: 1200,
                   height: 1800,
                 },
@@ -183,14 +183,16 @@ function ProductDetails(){
 <div id="blockcart-modal" class={openModalContext?`modal fade in` :`modal fade`} style={{visibility: openModalContext ? 'block' : 'none'}}>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header" style={{backgroundColor: apologyToAddToCart? "red":"#4cbb6c"}}>
         <button type="button" class="close" onClick={()=>{setOpenModalContext(false)}}>
           <span>×</span>
         </button>
-        <h4 class="modal-title h6 text-sm-center" id="myModalLabel"><FontAwesomeIcon icon={faCheck} style={{color: "white"}} /> Product successfully added to your shopping cart</h4>
+       {apologyToAddToCart?<h4 class="modal-title h6 text-sm-center" id="myModalLabel"><FontAwesomeIcon icon={faXmark} style={{color: "white"}} /> Unsuccessful adding to cart</h4>
+       :
+        <h4 class="modal-title h6 text-sm-center" id="myModalLabel"><FontAwesomeIcon icon={faCheck} style={{color: "white"}} /> Product successfully added to your shopping cart</h4>}
       </div>
       <div class="modal-body">
-        <div class="row">
+        {apologyToAddToCart? <div>Sorry, There is no more of this product </div>:<div class="row">
           <div class="col-md-5 divide-right">
             <div class="row">
               <div class="col-md-6">
@@ -230,7 +232,7 @@ function ProductDetails(){
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   </div>
@@ -250,7 +252,7 @@ function ProductDetails(){
 </ul> */}
 </div>
 </div>
-<div id="leo_product_reviews_block_extra" className="no-print">
+{/* <div id="leo_product_reviews_block_extra" className="no-print">
 <ul className="reviews_advices">
 <li className>
 <a className="open-review-form" href="javascript:void(0)" data-id-product="2" data-is-logged data-product-link="https://demo1.leotheme.com/bos_soucer_demo/en/basics/2-eiusmod-tempor.html">
@@ -259,7 +261,7 @@ Write a review
 </a>
 </li>
 </ul>
-</div>
+</div> */}
 <div className="product-prices">
 <div className="product-price h5 " itemProp="offers" itemScope itemType="https://schema.org/Offer">
 <link itemProp="availability" href="https://schema.org/InStock" />
@@ -269,8 +271,8 @@ Write a review
 </div>
 </div>
 <div className="tax-shipping-delivery-label">
-Tax excluded
-<span className="delivery-information">Delivery: 1 to 3 weeks</span>
+{/* Tax excluded  */}
+<span className="delivery-information"> Delivery: 1 to 3 weeks</span>
 </div>
 </div>
 <div id="product-description-short-2" className="description-short"><p>{product.description}</p></div>

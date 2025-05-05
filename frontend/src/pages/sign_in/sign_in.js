@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { filterUserByEmail, getAllUsers } from "../../Store/Actions/userAction";
 import { AuthContext } from "../../Context/AuthContext";
 import { LoggedInContext } from "../../Context/loggedUser";
+import { mergeGuestCartWithUser } from "../../Store/Actions/CartAction";
 
 function Sign_in(){
     const {openSignInModalContext, setOpenSignInModalContext} = useContext(OpenSignInModalContext)
@@ -167,14 +168,17 @@ function Sign_in(){
 
 //login
   const authContext = useContext(AuthContext);
-
+  // const {currentUser, setCurrentUser} = useContext(AuthContext);
+  const [currentUser, setCurrentUser] = useState({})
   const [loginError, setLoginError] = useState("") 
 
   const [userData, setUserData] = useState({
     username: "",
     password: "",
   });
-
+  useEffect(()=>{
+    console.log("current user from use effect",currentUser);
+  },[])
   const [errors, setErrors] = useState({
     usernameError: "",
     passwordError: "",
@@ -238,6 +242,7 @@ function Sign_in(){
               );
               console.log(response)
               console.log(response.data.user);
+              setCurrentUser(response.data.user)
               console.log(response.status);
               
               if (response.status === 200) {
@@ -248,6 +253,8 @@ function Sign_in(){
 
                 authContext?.login(response?.data?.jwt, response?.data?.user);
                 setOpenSignInModalContext(false)
+                console.log("current user after login",response.data.user);
+                dispatch(mergeGuestCartWithUser(response.data.user))
               }
               
             } catch (error) {
@@ -262,7 +269,7 @@ function Sign_in(){
               }
               
             }
-
+            
 };
 //end login
 

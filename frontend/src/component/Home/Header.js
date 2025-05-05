@@ -14,16 +14,14 @@ function Header() {
     const {openSignInModalContext, setOpenSignInModalContext} = useContext(OpenSignInModalContext)
     const user  =JSON.parse (localStorage.getItem("user"))
     const authContext = useContext(AuthContext);
-    const { contextLoggedIn, setContextLoggenIn } = useContext(LoggedInContext);
 
     const dispatch = useDispatch()
     useEffect(()=>{
-        dispatch(getCartItems())
+        dispatch(getCartItems(user))
     },[])
 
     const logOut = () => {
         localStorage.removeItem("user");
-        setContextLoggenIn("");
         authContext.logout();
         };
          

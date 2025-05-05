@@ -1,16 +1,18 @@
 
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
  import Pagination from '../../component/Pagination/Pagintaion' 
 import { getProductByCategoryId } from '../../Store/Actions/ProductAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import { getCategory } from '../../Store/Actions/CategoryAction';
-import { getAllVariants, getColor, getSize } from '../../Store/Actions/ProductVariantAcrion';
+import { getAllVariants, getColor, getSize, getVariantsProduct } from '../../Store/Actions/ProductVariantAcrion';
 import { UpdateToAddToCart, addToCart, getCartItems } from '../../Store/Actions/CartAction';
 import "../../style.css"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { OpenModalContext } from '../../Context/Open_modal';
+import { AuthContext } from '../../Context/AuthContext';
 function Products(){
   const { category_id } = useParams();
   const [hoverIndex, setHoverIndex] = useState(null);
@@ -107,27 +109,81 @@ function Products(){
 };
 
 useEffect(()=>{
-  dispatch(getCartItems())
+  dispatch(getCartItems(currentUser))
 },[])
 const [hoverIndexCard, setHoverIndexCard] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null); // Manage the selected product for options
+    const variantProduct = useSelector((state) => state.combineProductVariant.variantsProduct);
+    const [quantity, setQuantity] = useState(1);
 
+  const [selectedProduct, setSelectedProduct] = useState(null); // Manage the selected product for options
+  const {openModalContext, setOpenModalContext} = useContext(OpenModalContext);
+  const [cartDictItem,setCartDictItem] = useState()
+  const [apologyToAddToCart,setAbologyToAddToCart]=useState(false)
+  const {currentUser, setCurrentUser} = useContext(AuthContext);
+
+
+  
+   
+  // const handleAddToCart = (e) => {
+  //   e.preventDefault();
+  //   dispatch(getCartItems())
+  //   if (cartDictItem) {
+  //     if(cartDictItem.quantity + +quantity <= product.quantity){
+  //     // Dispatch the update action with the cart item ID and the updated quantity
+  //        dispatch(UpdateToAddToCart(cartDictItem.id, cartDictItem.quantity + +quantity));
+      
+  //        setOpenModalContext(true)
+  //     }
+  //     else{
+  //       setAbologyToAddToCart(true)
+  //     }
+  //   } else {
+  //     if(+quantity <= product.quantity){
+  //       const productObj = {
+  //         product: product_id,
+  //         quantity: quantity,  // Initial quantity
+  //         size: selectedSize,
+  //         color: selectedColor,
+  //       };
+  //       // Dispatch the add to cart action with the new product
+  //       dispatch(addToCart(productObj));
+  //       console.log("Adding new product to cartDictionary:", product_id);
+  //       setOpenModalContext(true)
+  //     }
+  //     else{
+  //       setAbologyToAddToCart(true)
+  //     }
+  //   }
+  
+  //   console.log("Product found in cartDictionary:", cartDictItem);
+  //   setOpenModalContext(true)
+  //  console.log("modal context",openModalContext);
+  //   // Reset selected product, color, and size
+  //   // setSelectedColor(null);
+  //   // setSelectedSize(null);
+  //   // setQuantity(1)
+  // };
   
   const handleAddToCart = (product) => {
     
     // Find if the product is already in the local cartDictionary state
     const cartDictItem = cart.find(
-      (item) => item.product === product && item.size === selectedSize && item.color === selectedColor
+      (item) => item.product === product.id && item.size === selectedSize && item.color === selectedColor
     );
   
     if (cartDictItem) {
+      if(cartDictItem.quantity + +quantity <= product.quantity)
       // Dispatch the update action with the cart item ID and the updated quantity
-      dispatch(UpdateToAddToCart(cartDictItem.id, cartDictItem.quantity + 1));
-  
-      console.log("Product found in cartDictionary:", cartDictItem);
+      {dispatch(UpdateToAddToCart(cartDictItem.id, cartDictItem.quantity + 1));
+        setOpenModalContext(true)
+      console.log("Product found in cartDictionary:", cartDictItem);}
+      else{
+        setAbologyToAddToCart(true)
+      }
     } else {
       const productObj = {
-        product: product,
+        user: currentUser?.id || null ,
+        product: product.id,
         quantity: 1,  // Initial quantity
         size: selectedSize,
         color: selectedColor,
@@ -136,8 +192,8 @@ const [hoverIndexCard, setHoverIndexCard] = useState(null);
      
   
       // Dispatch the add to cart action with the new product
-      dispatch(addToCart(productObj));
-  
+      dispatch(addToCart(productObj,currentUser));
+      setOpenModalContext(true)
       console.log("Adding new product to cartDictionary:", product);
     }
   
@@ -149,8 +205,10 @@ const [hoverIndexCard, setHoverIndexCard] = useState(null);
   };
   
 
-const handleFirstAddToCart = (productId) => {
-  setSelectedProduct(productId); // Show options for the clicked product
+const handleFirstAddToCart = (product) => {
+  setSelectedProduct(product); // Show options for the clicked product
+  dispatch(getVariantsProduct(product.id))
+
   setSelectedSize(null)
   setSelectedColor(null)
 };
@@ -161,7 +219,11 @@ const handleClickOutside = (event) => {
     setSelectedProduct(null);
   }
 };
-
+// useEffect(() => {
+//   // dispatch(getProductDetails(product_id));
+//   // product_id??setSelectedImage(product.image1);
+//   dispatch(getVariantsProduct(selectedProduct.id))
+// }, [selectedProduct]);
     return(
         <>
             <section id="wrapper">
@@ -422,7 +484,7 @@ const handleClickOutside = (event) => {
                                 <span className="product-additional" data-idproduct="2"></span>
                       
                                 {/* Moved product-options inside product-image */}
-                                {selectedProduct === product.id && hoverIndex === index &&<div className="product-options">
+                                {selectedProduct?.id === product.id && hoverIndex === index &&<div className="product-options">
                                   <div className="sizes">
                                     <label>Sizes:</label>
                                     <ol className="horizontal-list">
@@ -477,10 +539,10 @@ const handleClickOutside = (event) => {
                                     </div>
                                   
                                   <div className="button-container cart">
-                                    {selectedProduct !== product.id ? (
+                                    {selectedProduct?.id !== product.id ? (
                                       <button
                                         className="btn btn-primary btn-product add-to-cart leo-bt-cart"
-                                        onClick={() => handleFirstAddToCart(product.id)}
+                                        onClick={() => handleFirstAddToCart(product)}
                                       >
                                         <FontAwesomeIcon icon={faCartShopping} size="xl" />
                                         <span className="name-btn-product">Add to cart</span>
@@ -489,7 +551,7 @@ const handleClickOutside = (event) => {
                                       <>
                                         <button
                                           className="btn btn-primary btn-product add-to-cart leo-bt-cart"
-                                          onClick={() => handleAddToCart(product.id)}
+                                          onClick={() => handleAddToCart(product)}
                                         >
                                           <FontAwesomeIcon icon={faCartShopping} size="xl" />
                                           <span className="name-btn-product">Add second to cart</span>
@@ -541,6 +603,64 @@ const handleClickOutside = (event) => {
               </div>
               </div>
             </section>
+            <div id="blockcart-modal" class={openModalContext?`modal fade in` :`modal fade`} style={{visibility: openModalContext ? 'block' : 'none'}}>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style={{backgroundColor: apologyToAddToCart? "red":"#4cbb6c"}}>
+        <button type="button" class="close" onClick={()=>{setOpenModalContext(false)}}>
+          <span>×</span>
+        </button>
+       {apologyToAddToCart?<h4 class="modal-title h6 text-sm-center" id="myModalLabel"><FontAwesomeIcon icon={faXmark} style={{color: "white"}} /> Unsuccessful adding to cart</h4>
+       :
+        <h4 class="modal-title h6 text-sm-center" id="myModalLabel"><FontAwesomeIcon icon={faCheck} style={{color: "white"}} /> Product successfully added to your shopping cart</h4>}
+      </div>
+      <div class="modal-body">
+        {apologyToAddToCart? <div>Sorry, There is no more of this product </div>:<div class="row">
+          <div class="col-md-5 divide-right">
+            <div class="row">
+              <div class="col-md-6">
+                <img class="product-image" src={selectedProduct?.image1} alt={selectedProduct?.name} title="" itemProp="image"/>
+              </div>
+              <div class="col-md-6">
+                <h6 class="h6 product-name">{selectedProduct?.name}</h6>
+                <p>${selectedProduct?.current_price}</p>
+                
+                                <span><strong>Size</strong>: {cartDictItem?variantProduct.find((item)=>item.size.id==cartDictItem.size)?.name:variantProduct.find((item)=>item.size.id==selectedSize)?.name}</span><br/>
+                                <span><strong>Color</strong>: {cartDictItem?variantProduct.find((item)=>item.color.id==cartDictItem.color)?.name:variantProduct.find((item)=>item.color.id==selectedColor)?.name}</span><br/>
+                                <p><strong>Quantity:</strong>&nbsp;{cartDictItem?cartDictItem.quantity:quantity}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="cart-content">
+                              <p class="cart-products-count">There are {cart.reduce((sum, item) => sum + item.quantity, 0)} items in your cart.</p>
+                            <p><strong>Total products:</strong>&nbsp;${cart.reduce((sum, item) => sum + +item.current_price*item.quantity, 0)}</p>
+              <p><strong>Total shipping:</strong>&nbsp;$7.00 </p>
+                            	{/* <p><strong>Taxes</strong>&nbsp;$0.00</p> */}
+                            <p><strong>Total:</strong>&nbsp;${cart.reduce((sum, item) => sum + +item.current_price*item.quantity, 0)+7}</p>
+              <div class="cart-content-btn">
+              <Link
+              to={`/products/${selectedProduct?.category}`}
+                                  
+              >
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Continue shopping</button>
+              </Link>
+
+              <Link
+              to={`/mycart`}
+                                  
+              >
+                <a href="//demo1.leotheme.com/bos_soucer_demo/en/cart?action=show" class="btn btn-primary"><FontAwesomeIcon icon={faCheck} style={{color: "white"}} /> Proceed to checkout</a>
+              </Link>
+              </div>
+            </div>
+          </div>
+        </div>}
+      </div>
+    </div>
+  </div>
+</div>
+<div class={openModalContext?"modal-backdrop fade in":""}></div>
         </>
     )
 }
