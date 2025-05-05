@@ -23791,7 +23791,14 @@ body#checkout #gift_message {
     cursor: pointer;
     display: none
 }
-
+.trash-icon {
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  
+  .trash-icon:hover {
+    color: red;
+  }
 .product-cover .layer .zoom-in {
     font-size: 30px;
     color: #cba146;

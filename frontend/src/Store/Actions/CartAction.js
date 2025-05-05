@@ -31,6 +31,13 @@ export const getCartItems = (user) => async (dispatch) => {
 export const addToCart = (item,user) => async (dispatch, getState) => {
   const token = localStorage.getItem("jwt");
   const variants = await dispatch(getVariantsProduct(item.product));
+  const currentVariant = await variants.find(
+    (searchItem) =>
+    searchItem.product === item.product &&
+    searchItem.color.id === item.color &&
+    searchItem.size.id === item.size
+  );
+  console.log("variants from caer action",variants);
   if (user) {
     
     try {
@@ -43,15 +50,16 @@ export const addToCart = (item,user) => async (dispatch, getState) => {
       const userCart = res.data;
   
       
-        const existingItem = userCart.find(
+        const existingItem = await userCart.find(
           (searchItem) =>
           searchItem.product === item.product &&
           searchItem.color === item.color &&
           searchItem.size === item.size
         );
-  
+        
+          console.log("variant quantity:",currentVariant.quantity);
         if (existingItem) {
-          if(existingItem.quantity<variants.quantity){
+          if(existingItem?.quantity<currentVariant.quantity){
           await axios.patch(
             `http://127.0.0.1:8000/cart/${existingItem.id}`,
             {
@@ -63,10 +71,12 @@ export const addToCart = (item,user) => async (dispatch, getState) => {
                 Authorization: `Bearer ${token}`,
               },
             }
-          );}
-          else{
-            
-          }
+          );
+        // return null
+      }
+          // else if((existingItem?.quantity<=variants.quantity)){
+          //   return "you exceed the quantities in stock"
+          // }
         } else {
           await axios.post(
             "http://127.0.0.1:8000/cart/",
@@ -93,9 +103,12 @@ export const addToCart = (item,user) => async (dispatch, getState) => {
           searchItem.size === item.size
       );
       if(existingItem){
-      existingItem.quantity+=1
-      }else{
-    currentCart.push(item);
+        if(existingItem?.quantity<currentVariant.quantity){
+            existingItem.quantity+=1
+          }
+      }
+      else{
+          currentCart.push(item);
       }
     localStorage.setItem("cart", JSON.stringify(currentCart));
 
@@ -159,7 +172,6 @@ export const mergeGuestCartWithUser = (user) => async (dispatch) => {
   const token = localStorage.getItem("jwt");
 
   try {
-    // 1. هات سلة اليوزر من السيرفر
     const res = await axios.get(`http://127.0.0.1:8000/cart/?user_id=${user.id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -169,7 +181,6 @@ export const mergeGuestCartWithUser = (user) => async (dispatch) => {
     const userCart = res.data;
 
     for (let guestItem of guestCart) {
-      // 2. ابحث عن العنصر المتكرر
       const existingItem = userCart.find(
         (item) =>
           item.product === guestItem.product &&
@@ -178,7 +189,6 @@ export const mergeGuestCartWithUser = (user) => async (dispatch) => {
       );
 
       if (existingItem) {
-        // 3. لو متكرر: زوّد الكمية بـ 1
         await axios.patch(
           `http://127.0.0.1:8000/cart/${existingItem.id}`,
           {
@@ -191,7 +201,6 @@ export const mergeGuestCartWithUser = (user) => async (dispatch) => {
           }
         );
       } else {
-        // 4. لو مش متكرر: أضف العنصر
         await axios.post(
           "http://127.0.0.1:8000/cart/",
           { ...guestItem, user: user.id },
@@ -204,10 +213,8 @@ export const mergeGuestCartWithUser = (user) => async (dispatch) => {
       }
     }
 
-    // 5. امسح سلة الضيف
     localStorage.removeItem("cart");
 
-    // 6. حدث السلة في Redux
     dispatch(getCartItems(user));
   } catch (error) {
     console.log("Error merging guest cart:", error);
@@ -272,27 +279,27 @@ export const UpdateToAddToCart = (cartItemId,newQuantity) => async(dispatch) => 
     
 }
 
-export const removeFromCart = (cartItemId) => async (dispatch) => {
+export const removeFromCart = (cartItem,user) => async (dispatch) => {
 
-  if (isLoggedIn()) {
-    // ✅ لو المستخدم مسجل
+  if (user) {
+    //  لو المستخدم مسجل
     const token = localStorage.getItem("jwt");
 
-    await axios.delete(`http://127.0.0.1:8000/cart/${cartItemId}/`, {
+    await axios.delete(`http://127.0.0.1:8000/cart/${cartItem.id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
     // بعد الحذف، نجيب الكارت من السيرفر
-    dispatch(getCartItems());
+    dispatch(getCartItems(user));
 
   } else {
-    // ✅ لو ضيف (بيستخدم localStorage)
+    //  لو ضيف (بيستخدم localStorage)
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];
 
     // شيل العنصر اللي الـ id بتاعه = cartItemId
-    const updatedCart = localCart.filter(item => item.id !== cartItemId);
+    const updatedCart = localCart.filter(item => item.id !== cartItem.id);
 
     // خزنه من تاني
     localStorage.setItem("cart", JSON.stringify(updatedCart));

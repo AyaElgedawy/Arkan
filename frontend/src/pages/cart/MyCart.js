@@ -18,6 +18,8 @@ function MyCart(){
     const [price,setPrice] = useState(0)
     const authContext = useContext(AuthContext);
     const {currentUser, setCurrentUser} = useContext(AuthContext);
+    const [errorMessage, setErrorMessage] = useState({});
+
     useEffect(()=>{
         dispatch(getColor());
         dispatch(getSize());
@@ -58,6 +60,24 @@ function MyCart(){
 //         dispatch(UpdateToAddToCart(cartItem.id, cartItem.quantity - 1));
 //     }
 // }
+// const handleAddToCart = async(item,currentUser) => {
+  
+   
+//     const message = await dispatch(addToCart(item, currentUser));
+//      if (message) {
+//         setErrorMessage((prev) => ({
+//           ...prev,
+//           [item.id]: message,
+//         }));
+//       } else {
+//         // لو مفيش رسالة خطأ امسحها
+//         setErrorMessage((prev) => ({
+//           ...prev,
+//           [item.id]: null,
+//         }));
+//       }
+   
+//   };
     return(
         <>
         <section id="wrapper">
@@ -124,7 +144,7 @@ function MyCart(){
                       type="text" value={item.quantity} name="product-quantity-spin" min="1" style={{display: "block"}}/>
                     <span className="input-group-addon bootstrap-touchspin-postfix" style={{display: "none"}}></span>
                     <span className="input-group-btn-vertical">
-                        <button className="align-top btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button" onClick={()=>dispatch(addToCart(item,currentUser))}>
+                        <button className="align-top btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button" onClick={()=>dispatch(addToCart(item, currentUser))}>
                         <FontAwesomeIcon className="align-top" icon={faChevronUp} size="2xs" />
                         </button>
                             <button className=" align-top btn btn-touchspin js-touchspin js-decrease-product-quantity bootstrap-touchspin-down" type="button" onClick={()=>dispatch(minusFromCart(item,currentUser))}>
@@ -132,6 +152,9 @@ function MyCart(){
                             </button>
                                 </span>
                                 </div>
+                                {errorMessage[item.id] && (
+                                    <p className="text-red-500 text-sm mt-1">{errorMessage[item.id]}</p>
+                                    )}
                     </div>
                     <div className="col-md-7 col-xs-2 col-sp-12 price">
                     <span className="product-price">
@@ -142,10 +165,10 @@ function MyCart(){
                     </div>
                     </div>
                     </div>
-                    <div className="col-md-2 col-xs-2 text-xs-right" onClick={()=>{dispatch(removeFromCart(item.id))}}>
+                    <div className="col-md-2 col-xs-2 text-xs-right" onClick={()=>{dispatch(removeFromCart(item,currentUser))}}>
                     <div className="cart-line-product-actions">
                     <span className="remove-from-cart"  >
-                    <FontAwesomeIcon icon={faTrash} />
+                    <FontAwesomeIcon icon={faTrash} className="trash-icon" />
                     </span>
                     </div>
                     </div>

@@ -164,23 +164,24 @@ const [hoverIndexCard, setHoverIndexCard] = useState(null);
   //   // setQuantity(1)
   // };
   
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async(product) => {
     
     // Find if the product is already in the local cartDictionary state
-    const cartDictItem = cart.find(
-      (item) => item.product === product.id && item.size === selectedSize && item.color === selectedColor
-    );
+    //const cartDictItem = cart.find(
+    //  (item) => item.product === product.id && item.size === selectedSize && item.color === selectedColor
+    //);
   
-    if (cartDictItem) {
-      if(cartDictItem.quantity + +quantity <= product.quantity)
+    //if (cartDictItem) {
+     // if(cartDictItem.quantity + +quantity <= product.quantity)
       // Dispatch the update action with the cart item ID and the updated quantity
-      {dispatch(UpdateToAddToCart(cartDictItem.id, cartDictItem.quantity + 1));
-        setOpenModalContext(true)
-      console.log("Product found in cartDictionary:", cartDictItem);}
-      else{
-        setAbologyToAddToCart(true)
-      }
-    } else {
+     // {dispatch(UpdateToAddToCart(cartDictItem.id, cartDictItem.quantity + 1));
+    //    setOpenModalContext(true)
+    //  console.log("Product found in cartDictionary:", cartDictItem);}
+     // else{
+    //    setAbologyToAddToCart(true)
+    //  }
+   // } 
+    //else {
       const productObj = {
         user: currentUser?.id || null ,
         product: product.id,
@@ -195,9 +196,8 @@ const [hoverIndexCard, setHoverIndexCard] = useState(null);
       dispatch(addToCart(productObj,currentUser));
       setOpenModalContext(true)
       console.log("Adding new product to cartDictionary:", product);
-    }
-  
-    
+   // }
+   
     // Reset selected product, color, and size
     setSelectedProduct(null);
     setSelectedColor(null);

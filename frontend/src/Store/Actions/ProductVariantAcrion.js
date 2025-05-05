@@ -65,7 +65,15 @@ export const getVariantsProduct = (product_id) => (dispatch) => {
         dispatch({
         type: "GET_VARIANTS_PRODUCT",
         payload: res.data
-    })})
-    .catch((err) => console.log(err))
+        })
+        return res.data
+        }
+    
+    )
+    .catch((err) => {
+        console.log(err)
+        return null;
+        }
+    )
     
 }
