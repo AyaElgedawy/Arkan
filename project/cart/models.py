@@ -1,7 +1,9 @@
 from django.db import models
+from account.models import CustomUser
 from products.models import Product ,Size ,Color
 
 class Cart(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)  
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     size = models.ForeignKey(Size, on_delete=models.CASCADE, null=True)
