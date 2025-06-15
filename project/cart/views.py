@@ -31,7 +31,6 @@ class CartListCreateView(generics.ListCreateAPIView):
             serializer.save()
 
 class CartRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Cart.objects.all()
     serializer_class = CartSerializer
 
     def get_queryset(self):
