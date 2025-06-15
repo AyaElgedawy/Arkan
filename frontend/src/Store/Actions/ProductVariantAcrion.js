@@ -71,7 +71,8 @@ export const getVariantsProduct = (product_id) => (dispatch) => {
     
     )
     .catch((err) => {
-        console.log(err)
+        console.log(product_id)
+        console.log("product id from get variant product", product_id);
         return null;
         }
     )

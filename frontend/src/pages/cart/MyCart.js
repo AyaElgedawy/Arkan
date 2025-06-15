@@ -144,7 +144,7 @@ function MyCart(){
                       type="text" value={item.quantity} name="product-quantity-spin" min="1" style={{display: "block"}}/>
                     <span className="input-group-addon bootstrap-touchspin-postfix" style={{display: "none"}}></span>
                     <span className="input-group-btn-vertical">
-                        <button className="align-top btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button" onClick={()=>dispatch(addToCart(item, currentUser))}>
+                        <button className="align-top btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button" onClick={()=>dispatch(addToCart(item, currentUser,null))}>
                         <FontAwesomeIcon className="align-top" icon={faChevronUp} size="2xs" />
                         </button>
                             <button className=" align-top btn btn-touchspin js-touchspin js-decrease-product-quantity bootstrap-touchspin-down" type="button" onClick={()=>dispatch(minusFromCart(item,currentUser))}>

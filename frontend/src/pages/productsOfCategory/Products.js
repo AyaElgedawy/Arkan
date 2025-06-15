@@ -193,7 +193,7 @@ const [hoverIndexCard, setHoverIndexCard] = useState(null);
      
   
       // Dispatch the add to cart action with the new product
-      dispatch(addToCart(productObj,currentUser));
+      dispatch(addToCart(productObj,currentUser,productObj.quantity));
       setOpenModalContext(true)
       console.log("Adding new product to cartDictionary:", product);
    // }
@@ -488,15 +488,15 @@ const handleClickOutside = (event) => {
                                   <div className="sizes">
                                     <label>Sizes:</label>
                                     <ol className="horizontal-list">
-                                      {product.sizes.map((size) => (
-                                        <li key={size} onClick={() => handleSizeSelect(size)}
+                                      {variantProduct.map((item) => (
+                                        <li key={item.size.id} onClick={() => handleSizeSelect(item.size.id)}
                                         style={{
                                           cursor: 'pointer',
-                                          fontWeight: selectedSize === size ? 'bold' : 'normal',
-                                          borderColor: selectedSize === size&& "#cba146",    
-                                          backgroundColor:selectedSize === size&& "#f0f0f0",
+                                          fontWeight: selectedSize === item.size.id ? 'bold' : 'normal',
+                                          borderColor: selectedSize === item.size.id && "#cba146",    
+                                          backgroundColor:selectedSize === item.size.id && "#f0f0f0",
                                         }}>
-                                          {sizes.find((item)=>(item.id===size)).name}
+                                          {sizes.find((size)=>(size.id===item.size.id)).name}
                                         </li>
                                       ))}
                                     </ol>
@@ -504,15 +504,15 @@ const handleClickOutside = (event) => {
                                   <div className="colors">
                                     <label>Colors:</label>
                                     <ol className="horizontal-list">
-                                      {product.colors.map((color) => (
-                                        <li key={color} onClick={() => handleColorSelect(color)}
+                                      {variantProduct.map((item) => (
+                                        <li key={item.color.id} onClick={() => handleColorSelect(item.color.id)}
                                         style={{
                                           cursor: 'pointer',
-                                          fontWeight: selectedColor === color ? 'bold' : 'normal',
-                                          borderColor: selectedColor === color&& "#cba146",    
-                                          backgroundColor:selectedColor === color&& "#f0f0f0",
+                                          fontWeight: selectedColor === item.color.id ? 'bold' : 'normal',
+                                          borderColor: selectedColor === item.color.id && "#cba146",    
+                                          backgroundColor: selectedColor === item.color.id && "#f0f0f0",
                                         }}>
-                                          {colors.find((item)=>(item.id===color)).name}
+                                          {colors.find((color)=>(color.id===item.color.id)).name}
 
                                         </li>
                                       ))}

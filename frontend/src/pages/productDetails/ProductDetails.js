@@ -7,11 +7,12 @@ import { Magnifier, GlassMagnifier, SideBySideMagnifier, PictureInPictureMagnifi
 import Slider from 'react-slick';
 import "./ProductDetails.css"
 import ReactImageMagnify from 'react-image-magnify';
-import { UpdateToAddToCart, addToCart, getCartItems } from "../../Store/Actions/CartAction";
+import { UpdateToAddToCart, addToCart, getCartItems, minusFromCart } from "../../Store/Actions/CartAction";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faPen, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faChevronDown, faChevronUp, faPen, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { OpenModalContext } from "../../Context/Open_modal";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../Context/AuthContext";
 function ProductDetails(){
     const { product_id } = useParams();
     const product = useSelector((state) => state.combineProductDetails.product);
@@ -28,53 +29,76 @@ function ProductDetails(){
     const cart = useSelector((state) => state.combineCart.cart);
     const [review,setReview] = useState(false)
     const {openModalContext, setOpenModalContext} = useContext(OpenModalContext);
-    const [cartDictItem,setCartDictItem] = useState()
+    const [productVariantItem,setProductVariantItem] = useState()
+    const [newCartItem,setNewCartItem] = useState({})
     const [apologyToAddToCart,setAbologyToAddToCart]=useState(false)
-    
+    const authContext = useContext(AuthContext);
+    const {currentUser, setCurrentUser} = useContext(AuthContext);
     const dispatch = useDispatch()
 
     useEffect(() => {
       // Find if the product is already in the local cartDictionary state
-      setCartDictItem (cart.find(
-        (item) => item.product == product_id && item.size == selectedSize && item.color == selectedColor
-      ))
-      console.log("CartDictItem from useffect",cartDictItem);
-     }, [cart,selectedColor,selectedSize]);
+      const matchedItem = variantProduct.find(
+        (item) =>
+          item.product == product_id &&
+          item.size.id == selectedSize &&
+          item.color.id == selectedColor
+      );
+      //extract the data from matchedItem to extract the size id and color is ,not make them as ditionaries
+       setNewCartItem ( {
+        user:currentUser.id,
+        product: product_id,
+        size:matchedItem?.size.id,
+        color:matchedItem?.color.id,
+        quantity:quantity,
+        current_price:matchedItem?.current_price,
+      })
+      setProductVariantItem(matchedItem);
+      console.log("CartDictItem from useffect",matchedItem);
+      console.log('variantProduct from useffect', variantProduct);
+      console.log('product id from useffect', product_id);
+
+     }, [variantProduct,selectedColor,selectedSize]);
 
     const handleAddToCart = (e) => {
       e.preventDefault();
-      dispatch(getCartItems())
-      if (cartDictItem) {
-        if(cartDictItem.quantity + +quantity <= product.quantity){
-        // Dispatch the update action with the cart item ID and the updated quantity
-           dispatch(UpdateToAddToCart(cartDictItem.id, cartDictItem.quantity + +quantity));
-        
-           setOpenModalContext(true)
-        }
-        else{
-          setAbologyToAddToCart(true)
-        }
-      } else {
-        if(+quantity <= product.quantity){
-          const productObj = {
-            product: product_id,
-            quantity: quantity,  // Initial quantity
-            size: selectedSize,
-            color: selectedColor,
-          };
-          // Dispatch the add to cart action with the new product
-          dispatch(addToCart(productObj));
-          console.log("Adding new product to cartDictionary:", product_id);
-          setOpenModalContext(true)
-        }
-        else{
-          setAbologyToAddToCart(true)
-        }
+      try{
+        dispatch(addToCart(newCartItem,currentUser))
+        setOpenModalContext(true)
+
+      }catch{
+        setAbologyToAddToCart(true)
       }
+    //   dispatch(getCartItems(currentUser))
+    //   if (cartDictItem) {
+    //     if(cartDictItem.quantity + +quantity <= product.quantity){
+    //     // Dispatch the update action with the cart item ID and the updated quantity
+    //        dispatch(UpdateToAddToCart(cartDictItem.id, cartDictItem.quantity + +quantity));
+        
+    //     }
+    //     else{
+    //     }
+    //   } else {
+    //     if(+quantity <= product.quantity){
+    //       const productObj = {
+    //         product: product_id,
+    //         quantity: quantity,  // Initial quantity
+    //         size: selectedSize,
+    //         color: selectedColor,
+    //       };
+    //       // Dispatch the add to cart action with the new product
+    //       dispatch(addToCart(productObj));
+    //       console.log("Adding new product to cartDictionary:", product_id);
+    //       setOpenModalContext(true)
+    //     }
+    //     else{
+    //       setAbologyToAddToCart(true)
+    //     }
+    //   }
     
-      console.log("Product found in cartDictionary:", cartDictItem);
-      setOpenModalContext(true)
-     console.log("modal context",openModalContext);
+    //   console.log("Product found in cartDictionary:", cartDictItem);
+    //   setOpenModalContext(true)
+    //  console.log("modal context",openModalContext);
       // Reset selected product, color, and size
       // setSelectedColor(null);
       // setSelectedSize(null);
@@ -202,9 +226,9 @@ function ProductDetails(){
                 <h6 class="h6 product-name">{product?.name}</h6>
                 <p>${product.current_price}</p>
                 
-                                <span><strong>Size</strong>: {cartDictItem?variantProduct.find((item)=>item.size.id==cartDictItem.size)?.name:variantProduct.find((item)=>item.size.id==selectedSize)?.name}</span><br/>
-                                <span><strong>Color</strong>: {cartDictItem?variantProduct.find((item)=>item.color.id==cartDictItem.color)?.name:variantProduct.find((item)=>item.color.id==selectedColor)?.name}</span><br/>
-                                <p><strong>Quantity:</strong>&nbsp;{cartDictItem?cartDictItem.quantity:quantity}</p>
+                                <span><strong>Size</strong>: {productVariantItem?.size.name}</span><br/>
+                                <span><strong>Color</strong>: {productVariantItem?.color.name}</span><br/>
+                                <p><strong>Quantity:</strong>&nbsp;{quantity}</p>
               </div>
             </div>
           </div>
@@ -284,7 +308,7 @@ Write a review
 <span className="control-label">Size</span>
 <ul id="group_1">
 {selectedColor?variantProduct.map((item,index) => (
-    <li className="input-container float-xs-left" key={item.size.id} onClick={() =>setSelectedSize(item.size.id)}>
+    <li className="input-container float-xs-left" key={item.color.id} onClick={() =>setSelectedSize(item.size.id)}>
     <label>
     <input className="input-radio" type="radio" data-product-attribute={item.size.id}
      value={item.size.id}
@@ -294,15 +318,17 @@ Write a review
     <span className="radio-label">{item.size.name}</span>
     </label>
     </li>
+
 )):
 variantProduct.map((item,index) => (
-    <li className="input-container float-xs-left" key={item.size.id} onClick={() =>setSelectedSize(item.size.id)}>
+    <li className="input-container float-xs-left" key={item.color.id} onClick={() =>setSelectedSize(item.size.id)}>
     <label>
     <input className="input-radio" type="radio" data-product-attribute={item.size.id} value={item.size.id} checked={selectedSize==item.size.id && "checked"} />
     <span className="radio-label">{item.size.name}</span>
     </label>
     </li>
 ))}
+ 
 </ul>
 
 
@@ -311,25 +337,75 @@ variantProduct.map((item,index) => (
 <div className="clearfix product-variants-item">
 <span className="control-label">Color</span>
 <ul id="group_3">
-{selectedSize?variantProduct.map((item,index) => (
-<li key={item.color.id} className="float-xs-left input-container" onClick={() =>setSelectedColor(item.color.id)}>
-<label>
-<input className="input-color" type="radio" value={item.color.id}
- checked={selectedColor == item.color.id ?? "checked"}
-disabled={ selectedSize !== item.size.id } 
-  style={{border:selectedColor == item.color.id && "1px solid black"}}/>
-<span className="color" style={{backgroundColor: item.color.code}}><span className="sr-only">{item.color.name}</span></span>
-</label>
+{selectedSize ?
+  [...new Map(variantProduct
+    .filter(item => item.size.id === selectedSize)
+    .map(item => [item.color.id, item])
+  ).values()].map((item, index) => (
+    <li key={item.color.id} className="float-xs-left input-container" onClick={() => setSelectedColor(item.color.id)}>
+      <label>
+        <input
+          className="input-color"
+          type="radio"
+          value={item.color.id}
+          checked={selectedColor == item.color.id}
+          disabled={selectedSize !== item.size.id}
+          style={{ border: selectedColor == item.color.id && "1px solid black" }}
+        />
+        <span className="color" style={{ backgroundColor: item.color.code }}>
+          <span className="sr-only">{item.color.name}</span>
+        </span>
+      </label>
+    </li>
+  ))
+  :
+  [...new Map(variantProduct.map(item => [item.color.id, item])).values()]
+    .map((item, index) => (
+      <li key={item.color.id} className="float-xs-left input-container" onClick={() => setSelectedColor(item.color.id)}>
+        <label>
+          <input
+            className="input-color"
+            type="radio"
+            value={item.color.id}
+            checked={selectedColor == item.color.id}
+            style={{ border: selectedColor == item.color.id && "1px solid black" }}
+          />
+          <span className="color" style={{ backgroundColor: item.color.code }}>
+            <span className="sr-only">{item.color.name}</span>
+          </span>
+        </label>
+      </li>
+    ))
+}
+<li className="float-xs-left input-container" onClick={() => setSelectedColor(null)}>
+  <label>
+    <input
+      className="input-color"
+      type="radio"
+      checked={selectedColor === null}
+      style={{ border: "1px dashed grey", backgroundColor: "#f0f0f0" }}
+    />
+    <span
+      className="color"
+      style={{
+        backgroundColor: "#f0f0f0",
+        color: "#555",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "12px",
+        border: "1px dashed #aaa",
+        width: "30px",
+        height: "30px",
+        borderRadius: "50%"
+      }}
+    >
+       ✎
+      <span className="sr-only">Clear color selection</span>
+    </span>
+  </label>
 </li>
-))
-:variantProduct.map((item,index) => (
-<li key={item.color.id} className="float-xs-left input-container" onClick={() =>setSelectedColor(item.color.id)}>
-<label>
-<input className="input-color" type="radio" value={item.color.id} checked={selectedColor == item.color.id ?? "checked"} style={{border:selectedColor == item.color.id && "1px solid black"}}/>
-<span className="color" style={{backgroundColor: item.color.code}}><span className="sr-only">{item.color.name}</span></span>
-</label>
-</li>
-))}
+
 {/* <li className="float-xs-left input-container">
 <label>
 <input className="input-color" type="radio" data-product-attribute="3" name="group[3]" value="11" checked="checked"/>
@@ -345,7 +421,25 @@ disabled={ selectedSize !== item.size.id }
 <span className="control-label">Quantity</span>
 <div className="product-quantity clearfix">
 <div className="qty clearfix">
-<input type="number" id="quantity_wanted" value={quantity} className="input-group" min="1" aria-label="Quantity" onChange={(e)=>setQuantity(e.target.value)}/>
+{/* <input type="number" id="quantity_wanted" value={quantity} className="input-group" min="1" aria-label="Quantity" onChange={(e)=>setQuantity(e.target.value)}/> */}
+<div className="col-md-5 col-xs-6 col-sp-12 qty">
+                    <div className="input-group bootstrap-touchspin"><span className="input-group-addon bootstrap-touchspin-prefix" style={{display: "none"}}></span>
+                    <input className="js-cart-line-product-quantity form-control"
+                      type="text" value={quantity} name="product-quantity-spin" min="1" style={{display: "block"}}/>
+                    <span className="input-group-addon bootstrap-touchspin-postfix" style={{display: "none"}}></span>
+                    <span className="input-group-btn-vertical">
+                        <button className="align-top btn btn-touchspin js-touchspin js-increase-product-quantity bootstrap-touchspin-up" type="button" onClick={()=>quantity<productVariantItem.quantity && setQuantity(quantity+1)}>
+                        <FontAwesomeIcon className="align-top" icon={faChevronUp} size="2xs" />
+                        </button>
+                            <button className="align-top btn btn-touchspin js-touchspin js-decrease-product-quantity bootstrap-touchspin-down" type="button" onClick={()=>quantity>1 && setQuantity(quantity-1)}>
+                            <FontAwesomeIcon className="align-top"  icon={faChevronDown} size="2xs"/>
+                            </button>
+                                </span>
+                                </div>
+                                {/* {errorMessage[product.id] && (
+                                    <p className="text-red-500 text-sm mt-1">{errorMessage[item.id]}</p>
+                                    )} */}
+  </div>
 </div>
 <span id="product-availability" style={{color: `${product.quantity> 0 ? "green" : "red"}`}}>
 {/* <i className="material-icons rtl-no-flip product-available">&#xE5CA;</i> */}
@@ -438,7 +532,7 @@ Add to cart
 <div className={`tab-pane fade in ${actions=="reviews" && "active" }`} id="leo-product-show-review-content">
 <div id="product_reviews_block_tab" >
  <button onClick={()=>setReview(true)}>
- <FontAwesomeIcon icon={faPen} style={{color: "#63E6BE",}} />
+ <FontAwesomeIcon icon={faPen} style={{color: "#63E6BE"}} />
    Be the first to write your review!
 </button>
 </div>
