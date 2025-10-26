@@ -30,20 +30,14 @@ export const getCartItems = (user) => async (dispatch) => {
 
 export const addToCart = (item,user,quantity) => async (dispatch, getState) => {
   const token = localStorage.getItem("jwt");
-  console.log("item.product from caer action",item.product);
-
-
   const variants = await dispatch(getVariantsProduct(item.product||item.id));
   const currentVariant = await variants.find(
     (searchItem) =>
-    searchItem.product == item.product &&
-    searchItem.color.id == item.color &&
-    searchItem.size.id == item.size
+    searchItem.product === item.product &&
+    searchItem.color.id === item.color &&
+    searchItem.size.id === item.size
   );
-
   console.log("variants from caer action",variants);
-  console.log("currentVariant from cart action",currentVariant);
-
   if (user) {
     
     try {
@@ -54,26 +48,23 @@ export const addToCart = (item,user,quantity) => async (dispatch, getState) => {
       });
   
       const userCart = res.data;
-      console.log("userCart from cart action",userCart);
-
+  
       
         const existingItem = await userCart.find(
           (searchItem) =>
-          searchItem.product == item.product &&
-          searchItem.color == item.color &&
-          searchItem.size == item.size
+          searchItem.product === item.product &&
+          searchItem.color === item.color.id &&
+          searchItem.size === item.size.id
         );
-        console.log("existingItem from cart action",existingItem);
-
+        
           // console.log("variant quantity:",currentVariant.quantity);
         if (existingItem) {
           if(existingItem?.quantity<currentVariant.quantity){
           await axios.patch(
             `http://127.0.0.1:8000/cart/${existingItem.id}`,
             {
-              
+              ...existingItem,
               quantity: quantity || existingItem.quantity + 1,
-              product_variant:currentVariant.id
             },
             {
               headers: {
@@ -89,7 +80,7 @@ export const addToCart = (item,user,quantity) => async (dispatch, getState) => {
         } else {
           await axios.post(
             "http://127.0.0.1:8000/cart/",
-             item,
+            { ...item, user: user.id },
             {
               headers: {
                 Authorization: `Bearer ${token}`,

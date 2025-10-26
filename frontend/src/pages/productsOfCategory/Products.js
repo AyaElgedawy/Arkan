@@ -504,7 +504,7 @@ const handleClickOutside = (event) => {
                                   <div className="colors">
                                     <label>Colors:</label>
                                     <ol className="horizontal-list">
-                                      {variantProduct.map((item) => (
+                                      {[...new Map(variantProduct.map(item => [item.color.id, item])).values()].map((item) => (
                                         <li key={item.color.id} onClick={() => handleColorSelect(item.color.id)}
                                         style={{
                                           cursor: 'pointer',
