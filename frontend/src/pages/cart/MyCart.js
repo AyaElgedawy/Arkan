@@ -6,6 +6,7 @@ import { getColor, getSize } from "../../Store/Actions/ProductVariantAcrion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronLeft, faChevronUp, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../../Context/AuthContext";
+import { Link } from "react-router-dom";
 
 
 function MyCart(){
@@ -228,7 +229,7 @@ function MyCart(){
             </div>
             <div className="checkout cart-detailed-actions card-block">
             <div className="text-sm-center">
-            <a href="https://demo1.leotheme.com/bos_soucer_demo/en/order" className="btn btn-outline">Proceed to checkout</a>
+            <Link to={"/checkout"} className="btn btn-outline">Proceed to checkout</Link>
             </div>
             </div>
             </div>

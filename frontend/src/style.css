@@ -6826,7 +6826,10 @@ a.text-gray-dark:hover {
     }
     .col-md-8 {
         float: left;
-        width: 66.66667%
+        width: 66.66667%;
+        border: #ddd solid;
+        box-shadow: 0 0px 7px rgba(0, 0, 0, 0.2);
+        padding: 5px;
     }
     .col-md-9 {
         float: left;
@@ -21098,11 +21101,16 @@ body#category .product_list.grid .ajax_block_product {
     font-size: 21px;
     color: #000
 }
-
+.js-address-form p{
+    text-align: left;
+}
 #checkout #search_widget {
     display: none
 }
-
+.checkout-step .step-number{
+    padding: 10px;
+    display: inline-block;
+}
 #pagenotfound .page-content #search_widget {
     width: 100%
 }
@@ -21381,11 +21389,11 @@ body#category .product_list.grid .ajax_block_product {
     width: 100%
 }
 
-body#checkout [data-action="show-password"] {
+ [data-action="show-password"] {
     background: #878787
 }
 
-body#checkout .custom-checkbox {
+ .custom-checkbox {
     display: -webkit-box;
     display: -moz-box;
     display: box;
@@ -21395,7 +21403,7 @@ body#checkout .custom-checkbox {
     display: flex
 }
 
-body#checkout .custom-checkbox span {
+ .custom-checkbox span {
     -webkit-box-flex: 0;
     -moz-box-flex: 0;
     box-flex: 0;
@@ -21406,28 +21414,28 @@ body#checkout .custom-checkbox span {
     margin-top: 2px
 }
 
-body#checkout .custom-checkbox em {
+ .custom-checkbox em {
     width: 500px;
     display: block
 }
 
 @media (max-width:1199px) {
-    body#checkout .custom-checkbox em {
+     .custom-checkbox em {
         width: 300px
     }
 }
 
 @media (max-width:780px) {
-    body#checkout .custom-checkbox em {
+     .custom-checkbox em {
         width: 240px
     }
 }
 
-body#checkout section#content {
+ section#content {
     margin-bottom: 25px
 }
 
-body#checkout section.checkout-step {
+ section.checkout-step {
     -moz-box-shadow: 2px 2px 11px 0 rgba(0, 0, 0, .1);
     -webkit-box-shadow: 2px 2px 11px 0 rgba(0, 0, 0, .1);
     -o-box-shadow: 2px 2px 11px 0 rgba(0, 0, 0, .1);
@@ -21438,63 +21446,66 @@ body#checkout section.checkout-step {
     padding: 15px
 }
 
-body#checkout section.checkout-step .step-title {
+ section.checkout-step .step-title {
     text-transform: uppercase;
     cursor: pointer;
-    margin-bottom: 0
+    margin-bottom: 0;
+    
 }
 
-body#checkout section.checkout-step .content {
+ section.checkout-step .content {
     padding: 0 37px
 }
 
-body#checkout section.checkout-step .step-edit {
+ section.checkout-step .step-edit {
     text-transform: lowercase;
     font-weight: 400
 }
 
-body#checkout section.checkout-step .step-edit .edit {
+ section.checkout-step .step-edit .edit {
     font-size: 13px
 }
 
-body#checkout section.checkout-step .not-allowed {
+ section.checkout-step .not-allowed {
     cursor: not-allowed;
     opacity: .5;
     filter: alpha(opacity=50)
 }
 
-body#checkout section.checkout-step .content,
-body#checkout section.checkout-step .done,
-body#checkout section.checkout-step .step-edit {
+ section.checkout-step .content,
+ section.checkout-step .done,
+ section.checkout-step .step-edit {
     display: none
 }
-
-body#checkout section.checkout-step.-current .content {
+.checkout-step .step-title{
+    text-align: left;
+}
+ section.checkout-step.-current .content {
     display: block
 }
 
-body#checkout section.checkout-step.-current.-reachable.-complete .done,
-body#checkout section.checkout-step.-current.-reachable.-complete .step-edit {
+ section.checkout-step.-current.-reachable.-complete .done,
+ section.checkout-step.-current.-reachable.-complete .step-edit {
     display: none
 }
 
-body#checkout section.checkout-step.-current.-reachable.-complete .step-number {
+ section.checkout-step.-current.-reachable.-complete .step-number {
     display: inline-block
 }
 
-body#checkout section.checkout-step.-current.-reachable.-complete .content {
+ section.checkout-step.-current.-reachable.-complete .content {
     display: block
 }
 
-body#checkout section.checkout-step.-reachable.-complete h1 .done {
+ section.checkout-step.-reachable.-complete h1 .done {
     display: inline-block
 }
 
-body#checkout section.checkout-step.-reachable.-complete h1 .step-number {
+ section.checkout-step.-reachable.-complete h1 .step-number {
     display: none
 }
 
-body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
+ section.checkout-step.-reachable.-complete h1 .step-edit {
     cursor: pointer;
     display: block;
     float: right;
@@ -21502,84 +21513,85 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
     color: #acaaa6
 }
 
-.rtl body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
+.rtl  section.checkout-step.-reachable.-complete h1 .step-edit {
     float: left
 }
 
-.rtl body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
+.rtl  section.checkout-step.-reachable.-complete h1 .step-edit {
     margin-left: 2px;
     margin-right: inherit
 }
 
-body#checkout section.checkout-step.-reachable.-complete .content {
+ section.checkout-step.-reachable.-complete .content {
     display: none
 }
 
-body#checkout section.checkout-step small {
+ section.checkout-step small {
     color: #acaaa6
 }
 
-body#checkout section.checkout-step .default-input {
+ section.checkout-step .default-input {
     min-width: 40%
 }
 
-body#checkout section.checkout-step .default-input[name=address1],
-body#checkout section.checkout-step .default-input[name=address2] {
+ section.checkout-step .default-input[name=address1],
+ section.checkout-step .default-input[name=address2] {
     min-width: 60%
 }
 
-body#checkout section.checkout-step .radio-field {
+ section.checkout-step .radio-field {
     margin-top: 30px
 }
 
-body#checkout section.checkout-step .radio-field label {
+ section.checkout-step .radio-field label {
     display: inline
 }
 
-body#checkout section.checkout-step .checkbox-field div {
+ section.checkout-step .checkbox-field div {
     margin-top: 60px
 }
 
-body#checkout section.checkout-step .checkbox-field+.checkbox-field div {
+ section.checkout-step .checkbox-field+.checkbox-field div {
     margin-top: 0
 }
 
-body#checkout section.checkout-step .select-field div {
+ section.checkout-step .select-field div {
     background: #f6f6f6;
     padding: 10px 50px
 }
 
-body#checkout section.checkout-step .form-footer {
+ section.checkout-step .form-footer {
     text-align: center
 }
 
-body#checkout section.checkout-step #conditions-to-approve {
+ section.checkout-step #conditions-to-approve {
     padding-top: 16px
 }
 
-body#checkout section.checkout-step .payment-options label {
+ section.checkout-step .payment-options label {
     display: table-cell
 }
 
-body#checkout section.checkout-step .payment-options .custom-radio {
+ section.checkout-step .payment-options .custom-radio {
     margin-right: 20px
 }
 
-.rtl body#checkout section.checkout-step .payment-options .custom-radio {
+.rtl  section.checkout-step .payment-options .custom-radio {
     margin-left: 20px;
     margin-right: inherit
 }
 
-body#checkout section.checkout-step .payment-options .payment-option {
+ section.checkout-step .payment-options .payment-option {
     margin-bottom: 8px
 }
 
-body#checkout section.checkout-step .step-number {
+#checkout section.checkout-step .step-number {
     display: inline-block;
-    padding: 10px
+    padding: 10px;
+  
 }
 
-body#checkout section.checkout-step .address-selector {
+ section.checkout-step .address-selector {
     display: -webkit-box;
     display: -moz-box;
     display: box;
@@ -21614,7 +21626,7 @@ body#checkout section.checkout-step .address-selector {
     flex-wrap: wrap
 }
 
-body#checkout section.checkout-step .address-item {
+ section.checkout-step .address-item {
     background: #f6f6f6;
     -webkit-box-flex: 0;
     -moz-box-flex: 0;
@@ -21626,223 +21638,223 @@ body#checkout section.checkout-step .address-item {
     margin-bottom: 10px
 }
 
-body#checkout section.checkout-step .address-item.selected {
+ section.checkout-step .address-item.selected {
     background: #fff;
     border: #f44d51 3px solid
 }
 
-body#checkout section.checkout-step .address-alias {
+ section.checkout-step .address-alias {
     display: inline-block;
     font-weight: 400;
     margin-bottom: 10px
 }
 
-body#checkout section.checkout-step .address {
+ section.checkout-step .address {
     margin-left: 25px;
     font-weight: 400
 }
 
-.rtl body#checkout section.checkout-step .address {
+.rtl  section.checkout-step .address {
     margin-right: 25px;
     margin-left: inherit
 }
 
-body#checkout section.checkout-step .radio-block {
+ section.checkout-step .radio-block {
     padding: 15px;
     text-align: left
 }
 
-.rtl body#checkout section.checkout-step .radio-block {
+.rtl  section.checkout-step .radio-block {
     text-align: right
 }
 
-body#checkout section.checkout-step .custom-radio {
+ section.checkout-step .custom-radio {
     margin-right: 0
 }
 
-.rtl body#checkout section.checkout-step .custom-radio {
+.rtl  section.checkout-step .custom-radio {
     margin-left: 0;
     margin-right: inherit
 }
 
-body#checkout section.checkout-step .custom-radio input[type="radio"] {
+ section.checkout-step .custom-radio input[type="radio"] {
     width: 20px;
     height: 20px
 }
 
-body#checkout section.checkout-step .delete-address,
-body#checkout section.checkout-step .edit-address {
+ section.checkout-step .delete-address,
+ section.checkout-step .edit-address {
     color: #acaaa6;
     display: inline-block;
     margin: 0 5px
 }
 
-body#checkout section.checkout-step .delete-address .delete,
-body#checkout section.checkout-step .delete-address .edit,
-body#checkout section.checkout-step .edit-address .delete,
-body#checkout section.checkout-step .edit-address .edit {
+ section.checkout-step .delete-address .delete,
+ section.checkout-step .delete-address .edit,
+ section.checkout-step .edit-address .delete,
+ section.checkout-step .edit-address .edit {
     font-size: 13px
 }
 
-body#checkout section.checkout-step hr {
+ section.checkout-step hr {
     margin: 0
 }
 
-body#checkout section.checkout-step .address-footer {
+ section.checkout-step .address-footer {
     text-align: center;
     padding: 10px
 }
 
-body#checkout section.checkout-step #delivery-addresses,
-body#checkout section.checkout-step #invoice-addresses {
+ section.checkout-step #delivery-addresses,
+ section.checkout-step #invoice-addresses {
     margin-top: 20px
 }
 
-body#checkout section.checkout-step .add-address {
+ section.checkout-step .add-address {
     margin-top: 20px
 }
 
-body#checkout section.checkout-step .add-address a {
+ section.checkout-step .add-address a {
     color: #414141
 }
 
-body#checkout section.checkout-step .add-address a i {
+ section.checkout-step .add-address a i {
     font-size: 14px
 }
 
-body#checkout section.checkout-step .delivery-option {
+ section.checkout-step .delivery-option {
     background: #f6f6f6;
     padding: 15px 0;
     margin: 0 0 25px
 }
 
-body#checkout section.checkout-step .delivery-option label {
+ section.checkout-step .delivery-option label {
     text-align: inherit
 }
 
-body#checkout section.checkout-step .carrier-delay,
-body#checkout section.checkout-step .carrier-name {
+ section.checkout-step .carrier-delay,
+ section.checkout-step .carrier-name {
     display: inline-block;
     word-break: break-word;
     text-align: left
 }
 
-.rtl body#checkout section.checkout-step .carrier-delay,
-.rtl body#checkout section.checkout-step .carrier-name {
+.rtl  section.checkout-step .carrier-delay,
+.rtl  section.checkout-step .carrier-name {
     text-align: right
 }
 
-body#checkout section.checkout-step #customer-form,
-body#checkout section.checkout-step #delivery-address,
-body#checkout section.checkout-step #invoice-address,
-body#checkout section.checkout-step #login-form {
+ section.checkout-step #customer-form,
+ section.checkout-step #delivery-address,
+ section.checkout-step #invoice-address,
+ section.checkout-step #login-form {
     margin-left: 5px;
     margin-top: 25px
 }
 
-body#checkout section.checkout-step #customer-form .form-control-label,
-body#checkout section.checkout-step #delivery-address .form-control-label,
-body#checkout section.checkout-step #invoice-address .form-control-label,
-body#checkout section.checkout-step #login-form .form-control-label {
+ section.checkout-step #customer-form .form-control-label,
+ section.checkout-step #delivery-address .form-control-label,
+ section.checkout-step #invoice-address .form-control-label,
+ section.checkout-step #login-form .form-control-label {
     text-align: left
 }
 
-.rtl body#checkout section.checkout-step #customer-form .form-control-label,
-.rtl body#checkout section.checkout-step #delivery-address .form-control-label,
-.rtl body#checkout section.checkout-step #invoice-address .form-control-label,
-.rtl body#checkout section.checkout-step #login-form .form-control-label {
+.rtl  section.checkout-step #customer-form .form-control-label,
+.rtl  section.checkout-step #delivery-address .form-control-label,
+.rtl  section.checkout-step #invoice-address .form-control-label,
+.rtl  section.checkout-step #login-form .form-control-label {
     text-align: right
 }
 
-body#checkout section.checkout-step #customer-form .radio-inline,
-body#checkout section.checkout-step #delivery-address .radio-inline,
-body#checkout section.checkout-step #invoice-address .radio-inline,
-body#checkout section.checkout-step #login-form .radio-inline {
+ section.checkout-step #customer-form .radio-inline,
+ section.checkout-step #delivery-address .radio-inline,
+ section.checkout-step #invoice-address .radio-inline,
+ section.checkout-step #login-form .radio-inline {
     padding: 0
 }
 
-body#checkout section.checkout-step .sign-in {
+ section.checkout-step .sign-in {
     font-size: 12px
 }
 
-body#checkout section.checkout-step .forgot-password {
+ section.checkout-step .forgot-password {
     margin-left: 230px
 }
 
-body#checkout .additional-information {
+ .additional-information {
     font-size: 12px;
     margin-top: 20px
 }
 
-body#checkout .condition-label {
+ .condition-label {
     margin-left: 40px;
     margin-top: 10px
 }
 
-body#checkout .condition-label label {
+ .condition-label label {
     text-align: inherit;
     display: block;
     clear: none
 }
 
-body#checkout .cancel-address {
+ .cancel-address {
     margin: 10px;
     display: block;
     color: #878787;
     text-decoration: underline
 }
 
-body#checkout #cart-summary-product-list img {
+ #cart-summary-product-list img {
     border: #ebebeb 1px solid;
     width: 50px
 }
 
-body#checkout #cart-summary-product-list .media-body {
+ #cart-summary-product-list .media-body {
     vertical-align: middle
 }
 
-body#checkout #order-summary-content {
+ #order-summary-content {
     padding-top: 15px
 }
 
-body#checkout #order-summary-content h4.h4 {
+ #order-summary-content h4.h4 {
     margin-top: 10px;
     margin-bottom: 20px;
     font-size: 13px;
     text-transform: uppercase
 }
 
-body#checkout #order-summary-content h4.black {
+ #order-summary-content h4.black {
     color: #000
 }
 
-body#checkout #order-summary-content h4.addresshead {
+ #order-summary-content h4.addresshead {
     margin-top: 3px
 }
 
-body#checkout #order-summary-content .noshadow {
+ #order-summary-content .noshadow {
     box-shadow: none
 }
 
-body#checkout #order-summary-content #order-items {
+ #order-summary-content #order-items {
     border-right: 0
 }
 
-.rtl body#checkout #order-summary-content #order-items {
+.rtl  #order-summary-content #order-items {
     border-left: 0;
     border-right: inherit
 }
 
-body#checkout #order-summary-content #order-items h3.h3 {
+ #order-summary-content #order-items h3.h3 {
     color: #414141;
     margin-top: 20px
 }
 
-body#checkout #order-summary-content #order-items table tr:first-child td {
+ #order-summary-content #order-items table tr:first-child td {
     border-top: 0
 }
 
-body#checkout #order-summary-content .order-confirmation-table {
+ #order-summary-content .order-confirmation-table {
     padding: 1rem;
     margin-bottom: 2rem;
     background-color: #fff;
@@ -21850,7 +21862,7 @@ body#checkout #order-summary-content .order-confirmation-table {
     border-radius: 0
 }
 
-body#checkout #order-summary-content .summary-selected-carrier {
+ #order-summary-content .summary-selected-carrier {
     margin-bottom: .75rem;
     background-color: #fff;
     border: 1px solid #e5e5e5;
@@ -21858,26 +21870,26 @@ body#checkout #order-summary-content .summary-selected-carrier {
     padding: 1rem
 }
 
-body#checkout #order-summary-content .step-edit {
+ #order-summary-content .step-edit {
     display: inline;
     color: #acaaa6;
     font-size: 0
 }
 
-body#checkout #order-summary-content .step-edit i {
+ #order-summary-content .step-edit i {
     font-size: 14px;
     vertical-align: -2px
 }
 
-body#checkout #order-summary-content .step-edit:hover {
+ #order-summary-content .step-edit:hover {
     cursor: pointer
 }
 
-body#checkout #order-summary-content a .step-edit {
+ #order-summary-content a .step-edit {
     color: #acaaa6
 }
 
-body#checkout #gift_message {
+ #gift_message {
     max-width: 100%;
     border-color: #414141
 }
@@ -21959,13 +21971,13 @@ body#checkout #gift_message {
         margin: 0;
         padding: 0
     }
-    body#checkout section.checkout-step .address-item {
+     section.checkout-step .address-item {
         -webkit-flex-grow: 1;
         -moz-flex-grow: 1;
         flex-grow: 1;
         -ms-flex-positive: 1
     }
-    body#checkout section.checkout-step .delivery-option-2 {
+     section.checkout-step .delivery-option-2 {
         -webkit-box-orient: vertical;
         -moz-box-orient: vertical;
         box-orient: vertical;
@@ -22008,20 +22020,23 @@ body#checkout #gift_message {
 }
 
 @media (max-width:767px) {
-    body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
+     section.checkout-step.-reachable.-complete h1 .step-edit {
         float: none;
         margin-top: 4px;
         margin-left: 20px
     }
-    body#checkout #header .header-nav {
+     #header .header-nav {
         max-height: none;
         padding: 0
     }
-    body#checkout section.checkout-step .content {
+     section.checkout-step .content {
         padding: 15px
     }
-    body#checkout .form-group {
+     .form-group {
         margin-bottom: 8px
+    }
+    #delivery-address .form-group label{
+        text-align: left !important;
     }
     #order-items {
         border-right: 0;
@@ -22050,7 +22065,7 @@ body#checkout #gift_message {
 }
 
 @media (max-width:575px) {
-    body#checkout section.checkout-step .content {
+     section.checkout-step .content {
         padding: 15px 0
     }
     #payment-confirmation button {

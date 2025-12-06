@@ -16,6 +16,7 @@ import Sign_in from './pages/sign_in/sign_in';
 import { OpenSignInModalContext } from './Context/Open_SignIn_modal';
 import { LoggedInContext } from './Context/loggedUser';
 import { AuthProvider } from './Context/AuthContext';
+import Checkout from './pages/checkout/Checkout';
 
 function App() {
   const [openModalContext, setOpenModalContext] = useState(false)
@@ -43,6 +44,7 @@ function App() {
       <Route exact path={"/mycart"} component={MyCart} />
       <Route exact path={"/product_details/:product_id"} component={ProductDetails} />
       <Route exact path={"/product"} component={Product} />
+      <Route exact path={"/checkout"} component={Checkout} />
 
       </Switch>
       <Sign_in/>
